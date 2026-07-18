@@ -1,1 +1,1721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Forge — 26-Week Training Program</title>
+<style>
+  :root{
+    --bg: #0F1115;
+    --panel: #171A21;
+    --panel-2: #1E222B;
+    --line: #2A2F3A;
+    --text: #E7E9ED;
+    --text-dim: #9AA1AC;
+    --text-faint: #5C636F;
 
+    --strength: #8B7CF6;
+    --strength-bg: #1D1A33;
+    --cali: #4EA8DE;
+    --cali-bg: #11243A;
+    --hiit: #F2545B;
+    --hiit-bg: #311A1C;
+    --lsd: #3DD68C;
+    --lsd-bg: #133327;
+    --core: #F4B860;
+    --core-bg: #332512;
+    --yoga: #C89BF0;
+    --yoga-bg: #29193A;
+    --movement: #5AD1C8;
+    --movement-bg: #123330;
+    --rest: #5C636F;
+
+    --radius: 14px;
+    --radius-sm: 9px;
+    --ff-display: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+    --ff-body: 'Inter', system-ui, -apple-system, sans-serif;
+    --ff-mono: 'JetBrains Mono', 'SF Mono', monospace;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{
+    background:var(--bg); color:var(--text);
+    font-family:var(--ff-body);
+    -webkit-font-smoothing:antialiased;
+    height:100%;
+    overscroll-behavior-y:none;
+  }
+  body{
+    padding-bottom: calc(72px + env(safe-area-inset-bottom));
+    padding-top: env(safe-area-inset-top);
+  }
+
+  @font-face{
+    font-family:'Space Grotesk';
+    src:local('Space Grotesk');
+  }
+
+  /* ============ HEADER ============ */
+  header{
+    position:sticky; top:0; z-index:20;
+    background:rgba(15,17,21,0.92);
+    backdrop-filter: blur(14px);
+    border-bottom:1px solid var(--line);
+    padding: 14px 18px 12px;
+  }
+  .header-top{
+    display:flex; align-items:baseline; justify-content:space-between;
+    margin-bottom:10px;
+  }
+  .brand{
+    font-family:var(--ff-display); font-weight:700; font-size:19px;
+    letter-spacing:0.02em;
+  }
+  .brand span{color:var(--strength);}
+  .week-pill{
+    font-family:var(--ff-mono); font-size:12px; color:var(--text-dim);
+    background:var(--panel-2); border:1px solid var(--line);
+    border-radius:20px; padding:4px 12px;
+  }
+
+  .week-nav{
+    display:flex; align-items:center; gap:10px;
+  }
+  .week-arrow{
+    width:34px; height:34px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--panel-2); border:1px solid var(--line);
+    border-radius:50%;
+    color:var(--text); font-size:16px;
+    cursor:pointer; user-select:none;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .week-arrow:active{ transform:scale(0.92); background:var(--line); }
+  .week-arrow.disabled{ opacity:0.3; pointer-events:none; }
+
+  .week-track-wrap{ flex:1; overflow:hidden; position:relative; }
+  .week-track{
+    display:flex; gap:6px;
+    overflow-x:auto; scroll-behavior:smooth;
+    -ms-overflow-style:none; scrollbar-width:none;
+    padding: 2px 2px;
+  }
+  .week-track::-webkit-scrollbar{display:none;}
+  .week-chip{
+    flex-shrink:0;
+    font-family:var(--ff-mono); font-size:12px; font-weight:600;
+    width:34px; height:34px;
+    display:flex; align-items:center; justify-content:center;
+    border-radius:50%;
+    background:var(--panel-2); color:var(--text-dim);
+    border:1px solid var(--line);
+    cursor:pointer; transition: all 0.15s;
+  }
+  .week-chip.active{
+    background:var(--strength); color:#fff; border-color:var(--strength);
+  }
+  .week-chip.deload::after{
+    content:''; display:block; width:4px; height:4px; border-radius:50%;
+    background:var(--core); position:absolute; margin-top:18px; margin-left:14px;
+  }
+
+  /* ============ DAY TABS ============ */
+  .day-tabs{
+    display:flex; gap:4px; overflow-x:auto; -ms-overflow-style:none; scrollbar-width:none;
+    padding:0 18px 12px; margin-top:2px;
+  }
+  .day-tabs::-webkit-scrollbar{display:none;}
+  .day-tab{
+    flex-shrink:0;
+    font-family:var(--ff-body); font-size:13px; font-weight:600;
+    padding:7px 14px;
+    border-radius:20px;
+    background:var(--panel); border:1px solid var(--line);
+    color:var(--text-dim);
+    cursor:pointer; transition: all 0.15s; white-space:nowrap;
+    position:relative;
+  }
+  .day-tab.active{
+    background:var(--strength-bg); color:var(--strength); border-color:var(--strength);
+  }
+  .day-tab.rest{ color:var(--text-faint); }
+  .day-tab .check-dot{
+    display:inline-block; width:6px; height:6px; border-radius:50%;
+    background:var(--lsd); margin-left:6px; vertical-align:middle;
+  }
+
+  /* ============ MAIN ============ */
+  main{ padding:16px 18px 40px; max-width:640px; margin:0 auto; }
+
+  .day-header{
+    margin-bottom:18px;
+  }
+  .day-title{
+    font-family:var(--ff-display); font-size:26px; font-weight:700;
+    letter-spacing:-0.01em;
+  }
+  .day-subtitle{
+    font-size:13px; color:var(--text-dim); margin-top:4px;
+  }
+
+  .rest-day{
+    text-align:center; padding:60px 20px;
+    color:var(--text-dim);
+  }
+  .rest-day .glyph{ font-size:40px; margin-bottom:14px; opacity:0.5;}
+  .rest-day h3{ font-family:var(--ff-display); font-size:20px; color:var(--text); margin-bottom:6px;}
+  .rest-day p{ font-size:14px; line-height:1.6; max-width:380px; margin:0 auto;}
+
+  /* ============ SECTION CARD ============ */
+  .section{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    margin-bottom:14px;
+    overflow:hidden;
+  }
+  .section-head{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:13px 16px;
+    cursor:pointer;
+    user-select:none;
+  }
+  .section-head-left{ display:flex; align-items:center; gap:10px; }
+  .tag-dot{
+    width:9px; height:9px; border-radius:50%; flex-shrink:0;
+  }
+  .section-title{
+    font-family:var(--ff-display); font-size:15px; font-weight:600;
+  }
+  .section-meta{
+    font-family:var(--ff-mono); font-size:11px; color:var(--text-dim);
+  }
+  .section-progress{
+    font-family:var(--ff-mono); font-size:11px; color:var(--text-dim);
+    margin-right:4px;
+  }
+  .chevron{
+    color:var(--text-faint); font-size:14px; transition:transform 0.2s;
+    width:18px; text-align:center;
+  }
+  .chevron.open{ transform:rotate(90deg); }
+
+  .section-body{
+    border-top:1px solid var(--line);
+    padding:14px 16px 16px;
+  }
+  .section-body.collapsed{ display:none; }
+
+  /* tag accent colors */
+  .tag-strength{background:var(--strength);}
+  .tag-cali{background:var(--cali);}
+  .tag-hiit{background:var(--hiit);}
+  .tag-lsd{background:var(--lsd);}
+  .tag-core{background:var(--core);}
+  .tag-yoga{background:var(--yoga);}
+  .tag-movement{background:var(--movement);}
+  .tag-conditioning{background:var(--hiit);}
+
+  .section.strength{ }
+  .section.strength .section-head{ background:var(--strength-bg); }
+  .section.cali .section-head{ background:var(--cali-bg); }
+  .section.hiit .section-head{ background:var(--hiit-bg); }
+  .section.lsd .section-head{ background:var(--lsd-bg); }
+  .section.core .section-head{ background:var(--core-bg); }
+  .section.yoga .section-head{ background:var(--yoga-bg); }
+  .section.movement .section-head{ background:var(--movement-bg); }
+  .section.conditioning .section-head{ background:var(--hiit-bg); }
+
+  /* ============ EXERCISE ROW ============ */
+  .exercise-row{
+    display:flex; align-items:flex-start; gap:12px;
+    padding:11px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .exercise-row:last-child{ border-bottom:none; }
+
+  .check-btn{
+    width:24px; height:24px; flex-shrink:0; margin-top:1px;
+    border-radius:7px; border:1.5px solid var(--line);
+    background:transparent;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; transition: all 0.15s;
+    color:transparent; font-size:13px;
+  }
+  .check-btn.checked{
+    background:var(--lsd); border-color:var(--lsd); color:#0F1115;
+  }
+
+  .exercise-info{ flex:1; min-width:0; }
+  .exercise-name{ font-size:14px; font-weight:500; line-height:1.4; }
+  .exercise-target{ font-size:12px; color:var(--text-dim); margin-top:2px; }
+
+  .exercise-inputs{
+    display:flex; gap:6px; margin-top:8px; flex-wrap:wrap;
+  }
+  .mini-input{
+    font-family:var(--ff-mono); font-size:12px;
+    background:var(--panel-2); border:1px solid var(--line);
+    border-radius:7px; color:var(--text);
+    padding:6px 8px; width:62px;
+    text-align:center;
+    -webkit-appearance:none;
+  }
+  .mini-input:focus{ outline:none; border-color:var(--strength); }
+  .mini-input::placeholder{ color:var(--text-faint); }
+  .input-label{
+    font-size:10px; color:var(--text-faint); text-align:center;
+    margin-top:3px; text-transform:uppercase; letter-spacing:0.04em;
+  }
+  .input-group{ display:flex; flex-direction:column; align-items:center; }
+
+  /* ============ MODE PICKER ============ */
+  .mode-picker{
+    display:flex; gap:6px; margin-bottom:14px;
+  }
+  .mode-btn{
+    flex:1;
+    font-family:var(--ff-body); font-size:13px; font-weight:600;
+    padding:10px 8px;
+    border-radius:var(--radius-sm);
+    background:var(--panel-2); border:1px solid var(--line);
+    color:var(--text-dim);
+    cursor:pointer; transition: all 0.15s;
+    display:flex; align-items:center; justify-content:center; gap:6px;
+  }
+  .mode-btn.active{
+    color:#0F1115; border-color:transparent;
+  }
+  .mode-btn.active.run{ background:var(--lsd); }
+  .mode-btn.active.swim{ background:var(--cali); }
+  .mode-btn.active.bike{ background:var(--strength); }
+
+  .mode-detail{
+    background:var(--panel-2); border:1px solid var(--line);
+    border-radius:var(--radius-sm);
+    padding:12px 14px; margin-bottom:14px;
+    font-size:13px; line-height:1.6; color:var(--text);
+  }
+  .mode-detail .mdl{
+    font-size:11px; color:var(--text-faint); text-transform:uppercase;
+    letter-spacing:0.05em; margin-bottom:4px;
+  }
+
+  .cardio-log{
+    display:flex; gap:8px; flex-wrap:wrap;
+  }
+
+  /* ============ NOTES ============ */
+  .note-box{
+    margin-top:10px;
+    background:var(--panel-2); border:1px solid var(--line);
+    border-radius:var(--radius-sm);
+    padding:10px 12px;
+    font-size:12px; color:var(--text-dim); line-height:1.55;
+  }
+  .note-box b{ color:var(--text); }
+
+  textarea.session-note{
+    width:100%; min-height:54px;
+    font-family:var(--ff-body); font-size:13px;
+    background:var(--panel-2); border:1px solid var(--line);
+    border-radius:var(--radius-sm); color:var(--text);
+    padding:10px 12px; resize:vertical;
+    -webkit-appearance:none;
+  }
+  textarea.session-note:focus{ outline:none; border-color:var(--strength); }
+  textarea.session-note::placeholder{ color:var(--text-faint); }
+
+  /* ============ RPE ============ */
+  .rpe-row{
+    display:flex; align-items:center; gap:10px; margin-top:14px;
+  }
+  .rpe-label{ font-size:12px; color:var(--text-dim); flex-shrink:0; }
+  .rpe-scale{ display:flex; gap:4px; flex:1; }
+  .rpe-dot{
+    flex:1; aspect-ratio:1; max-width:28px;
+    border-radius:6px; border:1px solid var(--line);
+    background:var(--panel-2);
+    font-family:var(--ff-mono); font-size:11px;
+    display:flex; align-items:center; justify-content:center;
+    color:var(--text-faint); cursor:pointer; transition:all 0.1s;
+  }
+  .rpe-dot.active{ background:var(--hiit); color:#fff; border-color:var(--hiit); }
+
+  /* ============ BOTTOM NAV ============ */
+  nav.bottom{
+    position:fixed; bottom:0; left:0; right:0; z-index:30;
+    background:rgba(23,26,33,0.94);
+    backdrop-filter:blur(14px);
+    border-top:1px solid var(--line);
+    display:flex;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .nav-btn{
+    flex:1; display:flex; flex-direction:column; align-items:center; gap:3px;
+    padding:10px 0 8px;
+    color:var(--text-faint); font-size:10.5px; font-weight:600;
+    text-transform:uppercase; letter-spacing:0.04em;
+    cursor:pointer; transition:color 0.15s;
+    background:none; border:none;
+  }
+  .nav-btn.active{ color:var(--strength); }
+  .nav-icon{ font-size:18px; line-height:1; }
+
+  /* ============ STATS VIEW ============ */
+  .stats-grid{
+    display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px;
+  }
+  .stat-card{
+    background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+    padding:14px 16px;
+  }
+  .stat-num{
+    font-family:var(--ff-display); font-size:28px; font-weight:700;
+    line-height:1;
+  }
+  .stat-label{
+    font-size:11px; color:var(--text-dim); margin-top:5px;
+    text-transform:uppercase; letter-spacing:0.05em;
+  }
+  .stat-num.accent-strength{ color:var(--strength); }
+  .stat-num.accent-lsd{ color:var(--lsd); }
+  .stat-num.accent-hiit{ color:var(--hiit); }
+  .stat-num.accent-cali{ color:var(--cali); }
+
+  .max-test-card{
+    background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+    padding:16px; margin-bottom:14px;
+  }
+  .max-test-title{
+    font-family:var(--ff-display); font-size:16px; font-weight:600; margin-bottom:3px;
+  }
+  .max-test-sub{ font-size:12px; color:var(--text-dim); margin-bottom:14px; }
+  .max-test-row{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:10px 0; border-bottom:1px solid var(--line);
+  }
+  .max-test-row:last-child{ border-bottom:none; }
+  .max-test-name{ font-size:13px; font-weight:500; }
+  .max-test-input-wrap{ display:flex; align-items:center; gap:8px;}
+  .max-test-input{
+    font-family:var(--ff-mono); font-size:15px; font-weight:700;
+    background:var(--panel-2); border:1px solid var(--line);
+    border-radius:8px; color:var(--text);
+    width:60px; padding:6px; text-align:center;
+    -webkit-appearance:none;
+  }
+  .max-test-input:focus{ outline:none; border-color:var(--strength); }
+  .max-test-row-label{ font-size:11px; color:var(--text-faint); }
+
+  .table2-link{
+    margin-top:6px; font-size:12px; color:var(--text-dim); line-height:1.6;
+  }
+  .table2-link b{ color:var(--text); }
+
+  /* ============ STRENGTH HISTORY ============ */
+  .strength-history-card{
+    background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+    padding:16px; margin-bottom:14px;
+  }
+  .sh-empty{
+    font-size:13px; color:var(--text-dim); line-height:1.6; padding:8px 0;
+  }
+  .sh-exercise{
+    border-bottom:1px solid var(--line); padding:14px 0;
+  }
+  .sh-exercise:last-child{ border-bottom:none; padding-bottom:2px; }
+  .sh-exercise:first-of-type{ padding-top:4px; }
+  .sh-ex-head{
+    display:flex; align-items:baseline; justify-content:space-between;
+    margin-bottom:10px;
+  }
+  .sh-ex-name{ font-size:14px; font-weight:600; }
+  .sh-ex-trend{
+    font-family:var(--ff-mono); font-size:11px; color:var(--text-dim);
+  }
+  .sh-ex-trend.up{ color:var(--lsd); }
+  .sh-ex-trend.down{ color:var(--hiit); }
+  .sh-bars{
+    display:flex; align-items:flex-end; gap:4px; height:64px;
+    overflow-x:auto; -ms-overflow-style:none; scrollbar-width:none;
+    padding-bottom:2px;
+  }
+  .sh-bars::-webkit-scrollbar{ display:none; }
+  .sh-bar-col{
+    flex-shrink:0; display:flex; flex-direction:column; align-items:center;
+    gap:3px; min-width:34px;
+  }
+  .sh-bar-val{
+    font-family:var(--ff-mono); font-size:9px; color:var(--text-dim);
+    white-space:nowrap;
+  }
+  .sh-bar{
+    width:22px; border-radius:4px 4px 0 0;
+    background:var(--strength); min-height:3px;
+    transition:height 0.2s;
+  }
+  .sh-bar.current{ background:var(--cali); }
+  .sh-bar-wk{
+    font-family:var(--ff-mono); font-size:9px; color:var(--text-faint);
+  }
+  .sh-reps{
+    font-size:10px; color:var(--text-faint);
+  }
+  .sh-region-label{
+    font-size:11px; color:var(--text-faint); text-transform:uppercase;
+    letter-spacing:0.05em; margin:12px 0 2px; font-weight:600;
+  }
+  .sh-region-label:first-child{ margin-top:0; }
+
+  /* ============ PROGRAM OVERVIEW (Settings) ============ */
+  .overview-block{
+    background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+    padding:16px; margin-bottom:14px;
+  }
+  .overview-title{ font-family:var(--ff-display); font-size:15px; font-weight:600; margin-bottom:8px;}
+  .overview-body{ font-size:13px; color:var(--text-dim); line-height:1.7; }
+  .overview-body code{
+    font-family:var(--ff-mono); font-size:11px; background:var(--panel-2);
+    padding:2px 6px; border-radius:5px; color:var(--text);
+  }
+
+  .reset-btn{
+    width:100%; padding:12px; margin-top:4px;
+    background:var(--hiit-bg); border:1px solid var(--hiit);
+    color:var(--hiit); font-weight:600; font-size:13px;
+    border-radius:var(--radius-sm); cursor:pointer;
+  }
+
+  .view{ display:none; }
+  .view.active{ display:block; }
+
+  @media (min-width: 540px){
+    .day-title{ font-size:30px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="brand">FORGE<span>.</span></div>
+    <div class="week-pill" id="weekPill">WEEK 1 / 9</div>
+  </div>
+  <div class="week-nav">
+    <div class="week-arrow" id="weekPrev">‹</div>
+    <div class="week-track-wrap">
+      <div class="week-track" id="weekTrack"></div>
+    </div>
+    <div class="week-arrow" id="weekNext">›</div>
+  </div>
+</header>
+
+<div class="day-tabs" id="dayTabs"></div>
+
+<main>
+  <div class="view active" id="view-train">
+    <div class="day-header">
+      <div class="day-title" id="dayTitle">Monday</div>
+      <div class="day-subtitle" id="daySubtitle">Upper strength + Big 3</div>
+    </div>
+    <div id="dayContent"></div>
+  </div>
+
+  <div class="view" id="view-stats">
+    <div class="day-header">
+      <div class="day-title">Stats</div>
+      <div class="day-subtitle">Big 3, strength &amp; weekly volume</div>
+    </div>
+
+    <div class="stats-grid" id="weekStats"></div>
+
+    <div class="max-test-card">
+      <div class="max-test-title">Big 3 Max Test</div>
+      <div class="max-test-sub">Run weekly to track progress &amp; find your Table 2 band</div>
+      <div class="max-test-row">
+        <div>
+          <div class="max-test-name">Push-ups</div>
+          <div class="max-test-row-label" id="pushTrend">—</div>
+        </div>
+        <div class="max-test-input-wrap">
+          <input class="max-test-input" id="maxPush" type="number" inputmode="numeric" placeholder="0">
+          <span class="max-test-row-label">reps</span>
+        </div>
+      </div>
+      <div class="max-test-row">
+        <div>
+          <div class="max-test-name">Sit-ups</div>
+          <div class="max-test-row-label" id="situpTrend">—</div>
+        </div>
+        <div class="max-test-input-wrap">
+          <input class="max-test-input" id="maxSitup" type="number" inputmode="numeric" placeholder="0">
+          <span class="max-test-row-label">reps</span>
+        </div>
+      </div>
+      <div class="max-test-row">
+        <div>
+          <div class="max-test-name">Pull-ups</div>
+          <div class="max-test-row-label" id="pullTrend">—</div>
+        </div>
+        <div class="max-test-input-wrap">
+          <input class="max-test-input" id="maxPull" type="number" inputmode="numeric" placeholder="0">
+          <span class="max-test-row-label">reps</span>
+        </div>
+      </div>
+      <div class="table2-link" id="table2Result"></div>
+    </div>
+
+    <div class="strength-history-card">
+      <div class="max-test-title">Strength Progression</div>
+      <div class="max-test-sub">Weight &amp; reps logged per exercise, across weeks</div>
+      <div id="strengthHistory"></div>
+    </div>
+
+    <div class="overview-block">
+      <div class="overview-title">8-week endurance &amp; HIIT progression</div>
+      <div class="overview-body" id="progressionInfo"></div>
+    </div>
+  </div>
+
+  <div class="view" id="view-info">
+    <div class="day-header">
+      <div class="day-title">Program</div>
+      <div class="day-subtitle">Adapted NSW Physical Training Guide</div>
+    </div>
+
+    <div class="overview-block">
+      <div class="overview-title">Structure — 8-week block + break</div>
+      <div class="overview-body">
+        <b>Mon</b> Upper A (push) · <b>Tue</b> HIIT kettlebell/calisthenics · <b>Wed</b> Legs · <b>Thu</b> Upper B (pull) · <b>Fri</b> HIIT endurance + movement · <b>Sat</b> long endurance + movement · <b>Sun</b> full rest.<br><br>
+        3 gym sessions (push / pull / legs), two HIIT sessions that alternate in style — Tuesday is kettlebell/calisthenics conditioning, Friday is endurance intervals — Big 3 calisthenics on the lifting days, and ground-based movement work on the endurance days. Progressions follow NSW Tables 1, 2 and 6.
+      </div>
+    </div>
+
+    <div class="overview-block">
+      <div class="overview-title">Two HIIT styles</div>
+      <div class="overview-body">
+        <b>Tue — Kettlebell / calisthenics circuit:</b> power-endurance conditioning. Kettlebells are gym-only, so each exercise shows a bodyweight "or" version for home. <b>Fri — Endurance intervals:</b> pick run, swim or road bike, pace-matched per NSW Table 1 with swim distances in meters rounded to pool lengths (25m).
+      </div>
+    </div>
+
+    <div class="overview-block">
+      <div class="overview-title">Movement / mobility</div>
+      <div class="overview-body">
+        Ground-based movement work (joint CARs, deep squat sits, hanging, crawling, hip flows) in the LeoMoves tradition, placed on the endurance days. Each strength day also opens with a 2-4 min mobility prep for the joints you're about to load. These keep joints resilient — quality and control over range.
+      </div>
+    </div>
+
+    <div class="overview-block">
+      <div class="overview-title">8-week mesocycle + break</div>
+      <div class="overview-body">
+        Foundation (wk 1-2) → Build (wk 3-4) → Intensify (wk 5-6) → Peak (wk 7) → Back-off (wk 8) → Break (wk 9, marked with a dot; load eases ~30% or light movement only). At the end of the cycle, we rebuild the next 8 weeks from the weights and reps you logged.
+      </div>
+    </div>
+
+    <div class="overview-block">
+      <div class="overview-title">Updating this app</div>
+      <div class="overview-body">
+        Replace <code>index.html</code> in your GitHub repo with a new version any time the program changes. Your logged data stays on this device — it's stored locally and isn't affected by the file swap.
+      </div>
+    </div>
+
+    <button class="reset-btn" id="resetBtn">Reset all logged data on this device</button>
+  </div>
+</main>
+
+<nav class="bottom">
+  <button class="nav-btn active" data-view="train">
+    <div class="nav-icon">●</div>
+    <div>Train</div>
+  </button>
+  <button class="nav-btn" data-view="stats">
+    <div class="nav-icon">▲</div>
+    <div>Stats</div>
+  </button>
+  <button class="nav-btn" data-view="info">
+    <div class="nav-icon">▪</div>
+    <div>Program</div>
+  </button>
+</nav>
+
+<script>
+/* ============================================================
+   DATA MODEL
+   ============================================================ */
+
+const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+
+// Week 0 = test week (1.5mi run / 500m swim timed) -> we start program weeks at 1
+// 26-week progressions, derived from NSW Table 6 (yards -> meters: 1yd = 0.9144m)
+function ydToM(yd){ return Math.round(yd * 0.9144 / 25) * 25; } // round to nearest pool length (25m)
+
+const LSD_RUN_KM = []; // miles -> km
+const LSD_SWIM_M = []; // yards -> meters
+const HIIT_RUN_REPS = [];
+const HIIT_BIKE_INTERVALS = [];
+
+// From NSW Table 6
+const table6 = [
+  {wk:1, runMi:3,    swimYd:1000, intMin:15, intReps:4},
+  {wk:2, runMi:3.25, swimYd:1100, intMin:15, intReps:4},
+  {wk:3, runMi:3.5,  swimYd:1200, intMin:16, intReps:5},
+  {wk:4, runMi:3.75, swimYd:1300, intMin:16, intReps:5},
+  {wk:5, runMi:4,    swimYd:1400, intMin:17, intReps:6},
+  {wk:6, runMi:4.25, swimYd:1500, intMin:17, intReps:6},
+  {wk:7, runMi:4.5,  swimYd:1600, intMin:18, intReps:7},
+  {wk:8, runMi:4.75, swimYd:1700, intMin:18, intReps:7},
+  {wk:9, runMi:5,    swimYd:1800, intMin:19, intReps:8},
+  {wk:10,runMi:5.2,  swimYd:1900, intMin:19, intReps:8},
+  {wk:11,runMi:5.5,  swimYd:2000, intMin:20, intReps:9},
+  {wk:12,runMi:5.75, swimYd:2100, intMin:20, intReps:9},
+  {wk:13,runMi:6,    swimYd:2200, intMin:'2x12', intReps:10},
+  {wk:14,runMi:6.25, swimYd:2300, intMin:'2x12', intReps:10},
+  {wk:15,runMi:6.5,  swimYd:2400, intMin:'2x12', intReps:10},
+  {wk:16,runMi:6.75, swimYd:2500, intMin:'2x14', intReps:10},
+  {wk:17,runMi:7,    swimYd:2600, intMin:'2x14', intReps:10},
+  {wk:18,runMi:7.25, swimYd:2700, intMin:'2x14', intReps:10},
+  {wk:19,runMi:7.5,  swimYd:2800, intMin:'2x16', intReps:10},
+  {wk:20,runMi:7.75, swimYd:2900, intMin:'2x16', intReps:10},
+  {wk:21,runMi:8,    swimYd:3000, intMin:'2x16', intReps:10},
+  {wk:22,runMi:8.25, swimYd:3100, intMin:'2x18', intReps:10},
+  {wk:23,runMi:8.5,  swimYd:3200, intMin:'2x18', intReps:10},
+  {wk:24,runMi:8.75, swimYd:3300, intMin:'2x18', intReps:10},
+  {wk:25,runMi:9,    swimYd:3400, intMin:'2x20', intReps:10},
+  {wk:26,runMi:9.25, swimYd:3500, intMin:'2x20', intReps:10},
+];
+
+function mi2km(mi){ return Math.round(mi * 1.60934 * 100) / 100; }
+
+const DELOAD_WEEKS = [9];
+const WEEK_COUNT = 9;
+
+// 4-week mesocycle: Foundation -> Build -> Peak -> Deload
+// 8-week mesocycle + 1 week break (week 9)
+function strengthPhase(week){
+  if(week<=2) return {label:'Foundation', tempo:'3010', note:'Reps 10-12, moderate load. Establish clean technique and your working weights — these become the baseline we build on.'};
+  if(week<=4) return {label:'Build', tempo:'3110', note:'Same reps, add a little load each week. 1 sec pause at the bottom of each rep on the main lifts.'};
+  if(week<=6) return {label:'Intensify', tempo:'4010', note:'Heavier load, slower 4 sec eccentric. Drop to 8-10 reps if form slips — quality over number.'};
+  if(week===7) return {label:'Peak', tempo:'4011', note:'Heaviest controlled loads of the block. 4 sec down, 1 sec pause, controlled up. This is the test of the cycle.'};
+  if(week===8) return {label:'Back-off', tempo:'3010', note:'Pull load back ~10-15% from peak, reps 10-12. Consolidate strength before the break week.'};
+  return {label:'Break', tempo:'3010', note:'Recovery week. Ease load ~30%, reps 12-15, or swap for light movement only. Let the 8 weeks of work absorb before the next block.'};
+}
+
+// Big 3 Table 2 bands (push/situp share a band, pullups separate)
+const TABLE2 = [
+  {max:40,  pushSets:'5-6', pushReps:'10-15', pushTotal:'50-90',  pullMax:6,  pullSets:'5-6', pullReps:'2-3',  pullTotal:'10-18'},
+  {max:60,  pushSets:'4-5', pushReps:'15-20', pushTotal:'60-100', pullMax:9,  pullSets:'4-5', pullReps:'4-5',  pullTotal:'16-25'},
+  {max:80,  pushSets:'4-5', pushReps:'20-25', pushTotal:'80-125', pullMax:12, pullSets:'4-5', pullReps:'5-6',  pullTotal:'20-30'},
+  {max:100, pushSets:'3-4', pushReps:'30-40', pushTotal:'90-160', pullMax:15, pullSets:'3-4', pullReps:'8-10', pullTotal:'24-40'},
+  {max:Infinity, pushSets:'3-4', pushReps:'40-50', pushTotal:'120-200', pullMax:Infinity, pullSets:'3-4', pullReps:'10-12', pullTotal:'30-48'},
+];
+
+function getTable2Band(pushMax, situpMax, pullMax){
+  const psMax = Math.max(pushMax||0, situpMax||0);
+  let band = TABLE2[TABLE2.length-1];
+  for(const b of TABLE2){ if(psMax < b.max){ band = b; break; } }
+  let pullBand = TABLE2[TABLE2.length-1];
+  for(const b of TABLE2){ if((pullMax||0) < b.pullMax){ pullBand = b; break; } }
+  return {band, pullBand};
+}
+
+/* ============================================================
+   SESSION BUILDERS (per day, per week)
+   ============================================================ */
+
+function bigThreeSection(week, dayKey, volumeMod){
+  // volumeMod: 'full' | 'reduced' | 'moderate'
+  const {band, pullBand} = userTable2Band();
+  let pushReps = band.pushReps, situpReps = band.pushReps, pullReps = pullBand.pullReps;
+  let pushSets = band.pushSets, situpSets = band.pushSets, pullSets = pullBand.pullSets;
+
+  // simple textual reduction for 'reduced'
+  if(volumeMod === 'reduced'){
+    pushSets = reduceRange(pushSets, 1);
+    situpSets = reduceRange(situpSets, 1);
+    pullSets = reduceRange(pullSets, 1);
+  }
+  if(deload(week)){
+    pushSets = reduceRange(pushSets, 1);
+    situpSets = reduceRange(situpSets, 1);
+    pullSets = reduceRange(pullSets, 1);
+  }
+
+  return {
+    type:'cali',
+    title:'Big 3 — Calisthenics',
+    meta: deload(week) ? 'Deload volume' : (volumeMod==='reduced' ? 'Reduced volume' : 'Table 2 volume'),
+    exercises:[
+      {id:`${dayKey}-pushup`, name:'Push-ups', target:`${pushSets} sets × ${pushReps} reps`, hasWeight:false},
+      {id:`${dayKey}-situp`,  name:'Sit-ups',  target:`${situpSets} sets × ${situpReps} reps`, hasWeight:false},
+      {id:`${dayKey}-pullup`, name:'Pull-ups', target:`${pullSets} sets × ${pullReps} reps`, hasWeight:false},
+    ],
+    note:'Slow &amp; controlled — negative phase ≥ 2× the positive phase. 1-2 min rest between sets.'
+  };
+}
+
+function reduceRange(rangeStr, by){
+  const parts = rangeStr.split('-').map(Number);
+  if(parts.length===2 && !isNaN(parts[0]) && !isNaN(parts[1])){
+    return `${Math.max(1,parts[0]-by)}-${Math.max(1,parts[1]-by)}`;
+  }
+  return rangeStr;
+}
+
+function deload(week){ return DELOAD_WEEKS.includes(week); }
+
+function strengthSection(week, dayKey, variant){
+  const phase = strengthPhase(week);
+  const sets = '1-2';
+  const reps = deload(week) ? '12-15' : '10-12';
+
+  const exercisesByVariant = {
+    'push':[
+      {name:'Bench press'},
+      {name:'Incline press'},
+      {name:'Shoulder press'},
+      {name:'Deltoid lateral raise'},
+      {name:'Triceps dips / pushdown'},
+    ],
+    'pull':[
+      {name:'Pull-ups / lat pulldown'},
+      {name:'Seated row'},
+      {name:'Single-arm dumbbell row'},
+      {name:'Rear-delt fly / face pull'},
+      {name:'Biceps curl'},
+    ],
+    'legs':[
+      {name:'Goblet squat / leg press'},
+      {name:'Romanian deadlift'},
+      {name:'Walking lunges'},
+      {name:'Leg curl'},
+      {name:'Heel raises'},
+    ],
+  };
+
+  const exList = exercisesByVariant[variant].map((e,i)=>({
+    id:`${dayKey}-str${i}`,
+    name:e.name,
+    target:`${sets} × ${reps} reps · RPE 8-9`,
+    hasWeight:true
+  }));
+
+  const titles = {
+    'push':'Upper A — Push focus',
+    'pull':'Upper B — Pull focus',
+    'legs':'Lower Body — Legs'
+  };
+
+  return {
+    type:'strength',
+    title: titles[variant],
+    meta: `${phase.label} · Tempo ${phase.tempo}`,
+    exercises: exList,
+    note: phase.note
+  };
+}
+
+function coreSection(week, dayKey, exercises){
+  let exList = exercises.map((e,i)=>({
+    id:`${dayKey}-core${i}`,
+    name:e.name,
+    target:e.target,
+    hasWeight:false
+  }));
+  return {
+    type:'core',
+    title:'Core (supporting)',
+    meta: deload(week) ? 'Deload volume' : 'Standard',
+    exercises: exList,
+    note:null
+  };
+}
+
+function flexSection(dayKey, label){
+  return {
+    type:'core',
+    title:'Flexibility',
+    meta:label,
+    exercises:[{id:`${dayKey}-flex`, name:label, target:'While warm — hold each stretch 20-30s', hasWeight:false}],
+    note:null
+  };
+}
+
+function yogaSection(dayKey, meta){
+  return {
+    type:'yoga',
+    title:'Yoga / Mobility',
+    meta: meta || '20-40 min',
+    exercises:[
+      {id:`${dayKey}-yoga-flow`, name:'Mobility flow', target:'Sun salutations or full-body flow — 15-25 min', hasWeight:false},
+      {id:`${dayKey}-yoga-hips`, name:'Hip & hamstring openers', target:'Pigeon, lizard, forward folds — hold 45-60s each', hasWeight:false},
+      {id:`${dayKey}-yoga-tspine`, name:'Thoracic & shoulder mobility', target:'Cat-cow, thread-the-needle, open books', hasWeight:false},
+    ],
+    note:'This is active recovery — keep it gentle. Breathe into tight spots rather than forcing range.'
+  };
+}
+
+// Ground-based movement / mobility in the LeoMoves tradition — CARs, flows, crawls.
+function movementSection(dayKey, meta){
+  return {
+    type:'movement',
+    title:'Movement / Mobility Flow',
+    meta: meta || '15-25 min',
+    exercises:[
+      {id:`${dayKey}-mv-cars`, name:'Joint CARs (controlled rotations)', target:'Shoulders, hips, spine, ankles — 3-5 slow circles each direction', hasWeight:false},
+      {id:`${dayKey}-mv-squat`, name:'Deep squat sit + rotations', target:'Sit in the bottom 60-90s, rotate T-spine each side', hasWeight:false},
+      {id:`${dayKey}-mv-scap`, name:'Scapular & hanging work', target:'Scap pull-ups, active/passive hangs — 3 × 20-30s', hasWeight:false},
+      {id:`${dayKey}-mv-crawl`, name:'Crawling / locomotion pattern', target:'Beast crawl, crab reach, or Cossack flow — 2-3 min continuous', hasWeight:false},
+      {id:`${dayKey}-mv-hip`, name:'Hip mobility flow', target:'90/90 transitions, deep lunge reaches — controlled, no bouncing', hasWeight:false},
+    ],
+    note:'Ground-based movement work — CARs, deep positions, crawling, hanging. Quality and control over range; move slowly and own each position. Great for keeping joints resilient at any age.'
+  };
+}
+
+// Short mobility prep to open a strength session (2-4 min).
+function mobilityPrepSection(dayKey, focus){
+  const drills = {
+    'push':'Shoulder CARs, wall slides, thoracic extensions, band pull-aparts',
+    'pull':'Scap pull-ups, dead hangs, band dislocates, wrist prep',
+    'legs':'Hip CARs, deep squat sit, ankle rocks, leg swings',
+  };
+  return {
+    type:'movement',
+    title:'Mobility Prep',
+    meta:'2-4 min before lifting',
+    exercises:[
+      {id:`${dayKey}-prep`, name:drills[focus]||'Full-body joint prep', target:'Prime the joints you\'re about to load — controlled, not stretched to failure', hasWeight:false},
+    ],
+    note:null
+  };
+}
+
+function enduranceSection(week, dayKey, kind){
+  // kind = 'flex-cardio' (Friday, optional/moderate) or 'long' (Saturday)
+  const t = table6[week-1];
+  const runKm = mi2km(t.runMi);
+  const swimM = ydToM(t.swimYd);
+
+  if(kind==='flex-cardio'){
+    const modKm = Math.max(2, Math.round((runKm*0.6)*2)/2);
+    const modSwim = Math.max(600, Math.round((swimM*0.6)/25)*25);
+    return {
+      type:'lsd', week, dayKey,
+      title:'Endurance — Easy/Optional',
+      meta: deload(week) ? 'Deload — keep it light' : 'Flexible: 30-50 min if you train today',
+      modes:{
+        run:{label:'Run', detail:`${modKm} km easy, conversational pace. Optional — skip or shorten if you need more recovery.`},
+        swim:{label:'Swim', detail:`${modSwim} m easy continuous. Great low-impact option.`},
+        bike:{label:'Bike', detail:`${deload(week)?'30-40':'45-70'} min easy-to-moderate road ride.`}
+      }
+    };
+  } else {
+    return {
+      type:'lsd', week, dayKey,
+      title:'Endurance — Long',
+      meta: deload(week) ? 'Deload — reduced distance, easy effort' : `Week ${week} long session`,
+      modes:{
+        run:{label:'Run', detail:`${runKm} km at easy, relaxed pace. Build gradually week to week.`},
+        swim:{label:'Swim', detail:`${swimM} m continuous, easy effort.`},
+        bike:{label:'Bike', detail:`${deload(week)? '60-75':'90-120'} min steady endurance ride (zone 2) — best low-impact fat-loss session.`}
+      }
+    };
+  }
+}
+
+function conditioningSection(week, dayKey){
+  // Kettlebell / calisthenics HIIT circuit. Kettlebell = gym-only; bodyweight fallback shown.
+  const rounds = week<=2 ? 3 : (week<=5 ? 4 : (week<=7 ? 5 : 3));
+  const workRest = week<=4 ? '30s work / 30s rest' : '40s work / 20s rest';
+
+  const exercises = [
+    {id:`${dayKey}-cond0`, name:'KB swing  ·  or bodyweight: jump squat', target:'Explosive hips — power endurance', hasWeight:false},
+    {id:`${dayKey}-cond1`, name:'KB goblet squat  ·  or: air squat + pause', target:'Legs under fatigue', hasWeight:false},
+    {id:`${dayKey}-cond2`, name:'KB clean & press (alt)  ·  or: push-up → pike', target:'Full-body drive', hasWeight:false},
+    {id:`${dayKey}-cond3`, name:'KB row  ·  or: inverted row / towel row', target:'Pull under fatigue', hasWeight:false},
+    {id:`${dayKey}-cond4`, name:'Mountain climbers / burpees', target:'Conditioning finisher', hasWeight:false},
+  ];
+
+  return {
+    type:'conditioning',
+    week, dayKey,
+    title:'HIIT — Kettlebell / Calisthenics',
+    meta: deload(week) ? 'Break week — 2 easy rounds or skip' : `${rounds} rounds · ${workRest}`,
+    exercises,
+    note:'<b>Circuit:</b> move through all 5, then rest 1-2 min and repeat. Kettlebells are at the gym — the "or" option is your bodyweight version for home. Keep 1-2 reps in reserve; this is conditioning, not a strength max.'
+  };
+}
+
+function hiitSection(week, dayKey){
+  const t = table6[week-1];
+  const reps = t.intReps;
+  const runQtr = '~4s faster than 400m base pace';
+  const swimReps100 = '~2s faster than 100m base pace';
+
+  return {
+    type:'hiit',
+    week,
+    dayKey,
+    title:'HIIT — Endurance Intervals',
+    meta: deload(week) ? 'Break week — easy spin/swim only, no intervals' : `${reps} reps this week`,
+    deload: deload(week),
+    modes:{
+      run:{
+        label:'Run',
+        detail: deload(week)
+          ? '20-30 min easy jog — no hard intervals this week.'
+          : `Warm up 10 min → ${reps} × 400m intervals at ${runQtr} → recovery jog 2-2.5× work time between reps → 10 min cool-down.`
+      },
+      swim:{
+        label:'Swim',
+        detail: deload(week)
+          ? '15-20 min easy continuous swim — no hard intervals this week.'
+          : `Warm up 10 min easy → ${reps} × 100m hard intervals (4×25m or 2×50m pool) at ${swimReps100} → easy recovery stroke 2-2.5× work time → 10 min cool-down.`
+      },
+      bike:{
+        label:'Bike',
+        detail: deload(week)
+          ? '20-30 min easy spin — no sprint intervals this week.'
+          : `Warm up 10 min → ${reps} × 3 min hard effort (90-95%) → 3 min easy spin recovery between each → cool-down.`
+      }
+    }
+  };
+}
+
+function lsdSection(week, dayKey, type){
+  // type = 'short' (Thursday) or 'long' (Saturday)
+  const t = table6[week-1];
+  const runKm = mi2km(t.runMi);
+  const swimM = ydToM(t.swimYd);
+
+  if(type==='short'){
+    const shortRunKm = Math.max(2, Math.round((runKm*0.4)*2)/2);
+    const shortSwimM = Math.max(600, Math.round((swimM*0.4)/50)*50);
+    return {
+      type:'lsd', week, dayKey,
+      title:'LSD — Easy',
+      meta: deload(week) ? 'Deload — short & easy' : '20-30 min, talk-test pace',
+      modes:{
+        run:{label:'Run', detail:`${shortRunKm} km easy, conversational pace.`},
+        swim:{label:'Swim', detail:`${shortSwimM} m continuous easy stroke.`},
+        bike:{label:'Bike', detail:`${deload(week)?'20-25':'30-40'} min flat road, comfortable cadence.`}
+      }
+    };
+  } else {
+    return {
+      type:'lsd', week, dayKey,
+      title:'LSD — Long',
+      meta: deload(week) ? 'Deload — reduced distance' : `Week ${week} target (NSW Table 6)`,
+      modes:{
+        run:{label:'Run', detail:`${runKm} km at easy, relaxed pace. Build by ~0.4 km/week.`},
+        swim:{label:'Swim', detail:`${swimM} m continuous, easy effort.`},
+        bike:{label:'Bike', detail:`${deload(week)? '60-75':'90-120'} min steady endurance ride (zone 2).`}
+      }
+    };
+  }
+}
+
+/* ============================================================
+   WEEKLY TEMPLATE — returns array of sections per day
+   ============================================================ */
+function buildDay(week, dayIndex){
+  const dayName = DAYS[dayIndex];
+  const dayKey = `w${week}-d${dayIndex}`;
+
+  switch(dayName){
+    case 'Monday':
+      return {
+        dayKey, subtitle:'Upper A — Push + Big 3',
+        sections:[
+          mobilityPrepSection(dayKey, 'push'),
+          strengthSection(week, dayKey, 'push'),
+          bigThreeSection(week, dayKey, 'full'),
+          flexSection(dayKey, '10 min post-session stretch')
+        ]
+      };
+    case 'Tuesday':
+      return {
+        dayKey, subtitle:'HIIT — Kettlebell / Calisthenics',
+        sections:[
+          conditioningSection(week, dayKey),
+          coreSection(week, dayKey, [
+            {name:'Plank', target:'2 sets × 30s'},
+            {name:'Bird dog', target:'2 sets × 10 reps each side'},
+          ])
+        ]
+      };
+    case 'Wednesday':
+      return {
+        dayKey, subtitle:'Lower — Legs + core',
+        sections:[
+          mobilityPrepSection(dayKey, 'legs'),
+          strengthSection(week, dayKey, 'legs'),
+          coreSection(week, dayKey, [
+            {name:'Bridge', target:'2 sets × 12 reps each side'},
+            {name:'Side plank', target:'2 sets × 30s each side'},
+          ]),
+          flexSection(dayKey, '10 min post-session stretch — hips & quads')
+        ]
+      };
+    case 'Thursday':
+      return {
+        dayKey, subtitle:'Upper B — Pull + Big 3',
+        sections:[
+          mobilityPrepSection(dayKey, 'pull'),
+          strengthSection(week, dayKey, 'pull'),
+          bigThreeSection(week, dayKey, 'full'),
+          flexSection(dayKey, '10 min post-session stretch')
+        ]
+      };
+    case 'Friday':
+      return {
+        dayKey, subtitle:'HIIT — Endurance + movement',
+        sections:[
+          hiitSection(week, dayKey),
+          movementSection(dayKey, '15-20 min — post-cardio')
+        ]
+      };
+    case 'Saturday':
+      return {
+        dayKey, subtitle:'Long endurance + movement',
+        sections:[
+          enduranceSection(week, dayKey, 'long'),
+          movementSection(dayKey, '20-25 min')
+        ]
+      };
+    case 'Sunday':
+      return { dayKey, subtitle:'Full rest', sections:[], rest:true };
+  }
+}
+
+/* ============================================================
+   STATE / STORAGE
+   ============================================================ */
+const STORAGE_KEY = 'forge_training_v1';
+let state = loadState();
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return {
+    currentWeek: 1,
+    currentDay: 0, // 0 = Monday
+    checks: {},      // exerciseId -> bool
+    weights: {},     // exerciseId -> "weight x reps" string
+    cardioMode: {},  // dayKey-hiit / dayKey-lsd -> 'run'|'swim'|'bike'
+    cardioLog: {},   // dayKey-hiit / dayKey-lsd -> {dist, time}
+    rpe: {},         // dayKey -> 1-10
+    sessionNotes: {},// dayKey -> string
+    maxTest: {}      // 'push'/'situp'/'pull' -> array of {week, val}
+  };
+}
+function saveState(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function userTable2Band(){
+  // use most recent max test values, default to lowest band
+  const push = latestMax('push');
+  const situp = latestMax('situp');
+  const pull = latestMax('pull');
+  if(push===null && situp===null && pull===null){
+    return {band: TABLE2[0], pullBand: TABLE2[0]};
+  }
+  return getTable2Band(push||0, situp||0, pull||0);
+}
+function latestMax(key){
+  const arr = state.maxTest[key];
+  if(!arr || !arr.length) return null;
+  return arr[arr.length-1].val;
+}
+
+/* ============================================================
+   RENDER — HEADER / WEEK SELECTOR
+   ============================================================ */
+function renderWeekSelector(){
+  const track = document.getElementById('weekTrack');
+  track.innerHTML='';
+  for(let w=1; w<=WEEK_COUNT; w++){
+    const chip = document.createElement('div');
+    chip.className = 'week-chip' + (w===state.currentWeek?' active':'') + (DELOAD_WEEKS.includes(w)?' deload':'');
+    chip.textContent = w;
+    chip.style.position='relative';
+    chip.addEventListener('click', ()=>{
+      state.currentWeek = w;
+      saveState();
+      renderAll();
+      centerActiveChip();
+    });
+    track.appendChild(chip);
+  }
+  document.getElementById('weekPill').textContent = `WEEK ${state.currentWeek} / ${WEEK_COUNT}${deload(state.currentWeek)?' · DELOAD':''}`;
+
+  document.getElementById('weekPrev').classList.toggle('disabled', state.currentWeek<=1);
+  document.getElementById('weekNext').classList.toggle('disabled', state.currentWeek>=WEEK_COUNT);
+}
+function centerActiveChip(){
+  const track = document.getElementById('weekTrack');
+  const active = track.querySelector('.week-chip.active');
+  if(active){
+    const offset = active.offsetLeft - track.clientWidth/2 + active.clientWidth/2;
+    track.scrollTo({left:offset, behavior:'smooth'});
+  }
+}
+
+document.getElementById('weekPrev').addEventListener('click', ()=>{
+  if(state.currentWeek>1){ state.currentWeek--; saveState(); renderAll(); centerActiveChip(); }
+});
+document.getElementById('weekNext').addEventListener('click', ()=>{
+  if(state.currentWeek<WEEK_COUNT){ state.currentWeek++; saveState(); renderAll(); centerActiveChip(); }
+});
+
+/* ============================================================
+   RENDER — DAY TABS
+   ============================================================ */
+function renderDayTabs(){
+  const tabs = document.getElementById('dayTabs');
+  tabs.innerHTML='';
+  DAYS.forEach((d,i)=>{
+    const tab = document.createElement('div');
+    const day = buildDay(state.currentWeek, i);
+    const isRest = day.rest;
+    tab.className = 'day-tab' + (i===state.currentDay?' active':'') + (isRest?' rest':'');
+    tab.textContent = d.slice(0,3);
+
+    // completion dot if all exercises in that day are checked
+    if(!isRest && dayIsComplete(day)){
+      const dot = document.createElement('span');
+      dot.className='check-dot';
+      tab.appendChild(dot);
+    }
+
+    tab.addEventListener('click', ()=>{
+      state.currentDay = i;
+      saveState();
+      renderDayTabs();
+      renderDayContent();
+    });
+    tabs.appendChild(tab);
+  });
+}
+
+function dayIsComplete(day){
+  if(day.rest) return false;
+  let total=0, done=0;
+  day.sections.forEach(sec=>{
+    if(sec.exercises){
+      sec.exercises.forEach(ex=>{
+        total++;
+        if(state.checks[ex.id]) done++;
+      });
+    }
+  });
+  return total>0 && done===total;
+}
+
+/* ============================================================
+   RENDER — DAY CONTENT
+   ============================================================ */
+const collapsedState = {}; // dayKey-sectionIdx -> bool (true=collapsed)
+
+function renderDayContent(){
+  const day = buildDay(state.currentWeek, state.currentDay);
+  document.getElementById('dayTitle').textContent = DAYS[state.currentDay];
+  document.getElementById('daySubtitle').textContent = day.subtitle;
+
+  const content = document.getElementById('dayContent');
+  content.innerHTML='';
+
+  if(day.rest){
+    content.innerHTML = `
+      <div class="rest-day">
+        <div class="glyph">◌</div>
+        <h3>Full rest</h3>
+        <p>No scheduled training. Light walking, mobility, or complete rest — whatever supports recovery for the week ahead.</p>
+      </div>`;
+    return;
+  }
+
+  day.sections.forEach((sec, idx)=>{
+    content.appendChild(renderSection(sec, day.dayKey, idx));
+  });
+
+  // session note + RPE for the whole day
+  const noteWrap = document.createElement('div');
+  noteWrap.className='section';
+  noteWrap.innerHTML = `
+    <div class="section-body" style="border-top:none;">
+      <textarea class="session-note" placeholder="Session notes — how did it feel, anything to remember for next time...">${escapeHtml(state.sessionNotes[day.dayKey]||'')}</textarea>
+      <div class="rpe-row">
+        <div class="rpe-label">RPE</div>
+        <div class="rpe-scale" id="rpe-${day.dayKey}"></div>
+      </div>
+    </div>`;
+  content.appendChild(noteWrap);
+
+  const ta = noteWrap.querySelector('textarea');
+  ta.addEventListener('input', ()=>{
+    state.sessionNotes[day.dayKey] = ta.value;
+    saveState();
+  });
+
+  const rpeScale = noteWrap.querySelector(`#rpe-${day.dayKey}`);
+  for(let i=1;i<=10;i++){
+    const dot = document.createElement('div');
+    dot.className='rpe-dot' + (state.rpe[day.dayKey]===i?' active':'');
+    dot.textContent=i;
+    dot.addEventListener('click', ()=>{
+      state.rpe[day.dayKey] = (state.rpe[day.dayKey]===i)? null : i;
+      saveState();
+      renderDayContent();
+    });
+    rpeScale.appendChild(dot);
+  }
+}
+
+function escapeHtml(str){
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function renderSection(sec, dayKey, idx){
+  const wrap = document.createElement('div');
+  wrap.className = 'section ' + sec.type;
+
+  const sectionKey = `${dayKey}-sec${idx}`;
+  if(collapsedState[sectionKey]===undefined) collapsedState[sectionKey]=false;
+
+  const head = document.createElement('div');
+  head.className='section-head';
+
+  const tagClass = {strength:'tag-strength', cali:'tag-cali', hiit:'tag-hiit', lsd:'tag-lsd', core:'tag-core', yoga:'tag-yoga', movement:'tag-movement', conditioning:'tag-conditioning'}[sec.type];
+
+  let progressHtml='';
+  if(sec.exercises){
+    const total = sec.exercises.length;
+    const done = sec.exercises.filter(e=>state.checks[e.id]).length;
+    progressHtml = `<span class="section-progress">${done}/${total}</span>`;
+  }
+
+  head.innerHTML = `
+    <div class="section-head-left">
+      <div class="tag-dot ${tagClass}"></div>
+      <div>
+        <div class="section-title">${sec.title}</div>
+        <div class="section-meta">${sec.meta}</div>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center;">
+      ${progressHtml}
+      <div class="chevron ${collapsedState[sectionKey]?'':'open'}">›</div>
+    </div>`;
+
+  head.addEventListener('click', ()=>{
+    collapsedState[sectionKey] = !collapsedState[sectionKey];
+    renderDayContent();
+  });
+  wrap.appendChild(head);
+
+  const body = document.createElement('div');
+  body.className = 'section-body' + (collapsedState[sectionKey]?' collapsed':'');
+
+  if(sec.type==='hiit' || sec.type==='lsd'){
+    body.appendChild(renderCardioBody(sec, dayKey));
+  } else {
+    sec.exercises.forEach(ex=>{
+      body.appendChild(renderExerciseRow(ex));
+    });
+    if(sec.note){
+      const note = document.createElement('div');
+      note.className='note-box';
+      note.innerHTML = sec.note;
+      body.appendChild(note);
+    }
+  }
+
+  wrap.appendChild(body);
+  return wrap;
+}
+
+function renderExerciseRow(ex){
+  const row = document.createElement('div');
+  row.className='exercise-row';
+
+  const checked = !!state.checks[ex.id];
+
+  row.innerHTML = `
+    <div class="check-btn ${checked?'checked':''}">✓</div>
+    <div class="exercise-info">
+      <div class="exercise-name">${ex.name}</div>
+      <div class="exercise-target">${ex.target}</div>
+      ${ex.hasWeight ? `
+      <div class="exercise-inputs">
+        <div class="input-group">
+          <input class="mini-input" type="number" inputmode="decimal" placeholder="0" value="${state.weights[ex.id+'-kg']||''}">
+          <div class="input-label">kg</div>
+        </div>
+        <div class="input-group">
+          <input class="mini-input" type="number" inputmode="numeric" placeholder="0" value="${state.weights[ex.id+'-reps']||''}">
+          <div class="input-label">reps</div>
+        </div>
+      </div>` : ''}
+    </div>`;
+
+  const checkBtn = row.querySelector('.check-btn');
+  checkBtn.addEventListener('click', ()=>{
+    state.checks[ex.id] = !state.checks[ex.id];
+    saveState();
+    checkBtn.classList.toggle('checked');
+    renderDayTabs(); // update completion dot
+    // refresh progress count in section header without full re-render
+    refreshSectionProgress();
+  });
+
+  if(ex.hasWeight){
+    const inputs = row.querySelectorAll('.mini-input');
+    inputs[0].addEventListener('input', e=>{
+      state.weights[ex.id+'-kg'] = e.target.value;
+      saveState();
+    });
+    inputs[1].addEventListener('input', e=>{
+      state.weights[ex.id+'-reps'] = e.target.value;
+      saveState();
+    });
+  }
+
+  return row;
+}
+
+function refreshSectionProgress(){
+  // lightweight: just re-render the day content fully (state is small, fine for perf)
+  renderDayContent();
+}
+
+function renderCardioBody(sec, dayKey){
+  const wrap = document.createElement('div');
+
+  const cardioKey = `${dayKey}-${sec.type}`;
+  const currentMode = state.cardioMode[cardioKey] || 'run';
+
+  const picker = document.createElement('div');
+  picker.className='mode-picker';
+  ['run','swim','bike'].forEach(mode=>{
+    const btn = document.createElement('div');
+    btn.className='mode-btn ' + mode + (currentMode===mode?' active':'');
+    btn.textContent = sec.modes[mode].label;
+    btn.addEventListener('click', ()=>{
+      state.cardioMode[cardioKey]=mode;
+      saveState();
+      renderDayContent();
+    });
+    picker.appendChild(btn);
+  });
+  wrap.appendChild(picker);
+
+  const detail = document.createElement('div');
+  detail.className='mode-detail';
+  detail.innerHTML = `<div class="mdl">${sec.modes[currentMode].label} — Target</div>${sec.modes[currentMode].detail}`;
+  wrap.appendChild(detail);
+
+  // log inputs
+  const logKey = `${cardioKey}`;
+  const log = state.cardioLog[logKey] || {};
+  const logRow = document.createElement('div');
+  logRow.className='cardio-log';
+
+  const distLabel = currentMode==='swim' ? 'meters' : (currentMode==='bike' ? 'km' : 'km');
+  const distGroup = document.createElement('div');
+  distGroup.className='input-group';
+  distGroup.innerHTML = `
+    <input class="mini-input" style="width:80px" type="number" inputmode="decimal" placeholder="0" value="${log.dist||''}">
+    <div class="input-label">${distLabel}</div>`;
+  logRow.appendChild(distGroup);
+
+  const timeGroup = document.createElement('div');
+  timeGroup.className='input-group';
+  timeGroup.innerHTML = `
+    <input class="mini-input" style="width:80px" type="text" inputmode="numeric" placeholder="mm:ss" value="${log.time||''}">
+    <div class="input-label">time</div>`;
+  logRow.appendChild(timeGroup);
+
+  if(sec.type==='hiit'){
+    const repsGroup = document.createElement('div');
+    repsGroup.className='input-group';
+    repsGroup.innerHTML = `
+      <input class="mini-input" style="width:60px" type="number" inputmode="numeric" placeholder="0" value="${log.reps||''}">
+      <div class="input-label">reps done</div>`;
+    logRow.appendChild(repsGroup);
+  }
+
+  wrap.appendChild(logRow);
+
+  logRow.querySelectorAll('input').forEach((inp,i)=>{
+    inp.addEventListener('input', ()=>{
+      const obj = state.cardioLog[logKey] || {};
+      if(i===0) obj.dist = inp.value;
+      if(i===1) obj.time = inp.value;
+      if(i===2) obj.reps = inp.value;
+      obj.mode = currentMode;
+      state.cardioLog[logKey] = obj;
+      saveState();
+    });
+  });
+
+  return wrap;
+}
+
+/* ============================================================
+   RENDER — STATS VIEW
+   ============================================================ */
+function renderStats(){
+  // weekly volume stats based on current week's checks
+  const day0 = buildDay(state.currentWeek, 0);
+  let totals = {strength:0, cali:0, hiit:0, lsd:0, core:0};
+  let done = {strength:0, cali:0, hiit:0, lsd:0, core:0};
+
+  for(let i=0;i<7;i++){
+    const day = buildDay(state.currentWeek, i);
+    if(day.rest) continue;
+    day.sections.forEach(sec=>{
+      if(sec.exercises){
+        sec.exercises.forEach(ex=>{
+          totals[sec.type] = (totals[sec.type]||0) + 1;
+          if(state.checks[ex.id]) done[sec.type] = (done[sec.type]||0) + 1;
+        });
+      } else {
+        // hiit/lsd counted as 1 session each
+        totals[sec.type] = (totals[sec.type]||0) + 1;
+        const logKey = `${sec.dayKey}-${sec.type}`;
+        const log = state.cardioLog[logKey];
+        if(log && (log.dist || log.time)) done[sec.type] = (done[sec.type]||0) + 1;
+      }
+    });
+  }
+
+  const grid = document.getElementById('weekStats');
+  grid.innerHTML = `
+    <div class="stat-card">
+      <div class="stat-num accent-strength">${done.strength||0}/${totals.strength||0}</div>
+      <div class="stat-label">Strength sets</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num accent-cali">${done.cali||0}/${totals.cali||0}</div>
+      <div class="stat-label">Big 3 sets</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num accent-hiit">${done.hiit||0}/${totals.hiit||0}</div>
+      <div class="stat-label">HIIT sessions</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num accent-lsd">${done.lsd||0}/${totals.lsd||0}</div>
+      <div class="stat-label">LSD sessions</div>
+    </div>`;
+
+  // max test inputs
+  document.getElementById('maxPush').value = currentWeekMax('push') ?? '';
+  document.getElementById('maxSitup').value = currentWeekMax('situp') ?? '';
+  document.getElementById('maxPull').value = currentWeekMax('pull') ?? '';
+
+  document.getElementById('pushTrend').textContent = trendText('push');
+  document.getElementById('situpTrend').textContent = trendText('situp');
+  document.getElementById('pullTrend').textContent = trendText('pull');
+
+  renderTable2Result();
+
+  // progression info for current week
+  const t = table6[state.currentWeek-1];
+  const runKm = mi2km(t.runMi);
+  const swimM = ydToM(t.swimYd);
+  const intReps = t.intReps;
+  document.getElementById('progressionInfo').innerHTML = `
+    <b>Week ${state.currentWeek}${deload(state.currentWeek)?' (Deload)':''}</b><br>
+    LSD long target — Run: ${runKm} km · Swim: ${swimM} m · Bike: ${deload(state.currentWeek)?'60-75':'90-120'} min<br>
+    HIIT intervals — ${intReps} reps ${deload(state.currentWeek)?'(deload — easy session instead)':''}<br><br>
+    Distances convert NSW Table 6 (miles/yards) to km/m. Swim values rounded to nearest 25m (pool length).
+  `;
+
+  renderStrengthHistory();
+}
+
+function renderStrengthHistory(){
+  const container = document.getElementById('strengthHistory');
+  // Walk all weeks/days, collect strength exercises and their logged kg/reps.
+  // Group by region (upper/lower) then by exercise name, preserving week order.
+  const byName = {}; // name -> { region, entries:[{week, kg, reps}] }
+
+  for(let w=1; w<=WEEK_COUNT; w++){
+    for(let d=0; d<7; d++){
+      const day = buildDay(w, d);
+      if(day.rest) continue;
+      day.sections.forEach(sec=>{
+        if(sec.type!=='strength') return;
+        const tl = sec.title.toLowerCase();
+        const region = tl.includes('push') ? 'Push (Upper A)' : (tl.includes('pull') ? 'Pull (Upper B)' : 'Legs (Lower)');
+        sec.exercises.forEach(ex=>{
+          const kg = state.weights[ex.id+'-kg'];
+          const reps = state.weights[ex.id+'-reps'];
+          if(kg===undefined && reps===undefined) return;
+          if((kg===''||kg===undefined) && (reps===''||reps===undefined)) return;
+          if(!byName[ex.name]) byName[ex.name] = { region, entries:[] };
+          byName[ex.name].entries.push({
+            week:w,
+            kg: kg!==''&&kg!==undefined ? Number(kg) : null,
+            reps: reps!==''&&reps!==undefined ? Number(reps) : null
+          });
+        });
+      });
+    }
+  }
+
+  const names = Object.keys(byName);
+  if(names.length===0){
+    container.innerHTML = `<div class="sh-empty">No strength data logged yet. Log weight and reps on the Train tab — your progression for each exercise will appear here as a chart.</div>`;
+    return;
+  }
+
+  // group names by region
+  const REGION_ORDER = ['Push (Upper A)', 'Pull (Upper B)', 'Legs (Lower)'];
+  const regions = {'Push (Upper A)':[], 'Pull (Upper B)':[], 'Legs (Lower)':[]};
+  names.forEach(n=>{ if(regions[byName[n].region]) regions[byName[n].region].push(n); });
+
+  let html = '';
+  REGION_ORDER.forEach(region=>{
+    if(regions[region].length===0) return;
+    html += `<div class="sh-region-label">${region}</div>`;
+    regions[region].forEach(name=>{
+      const data = byName[name];
+      const entries = data.entries.filter(e=>e.kg!==null);
+      // trend: compare last two kg entries
+      let trendHtml = '<span class="sh-ex-trend">—</span>';
+      if(entries.length>=2){
+        const diff = entries[entries.length-1].kg - entries[entries.length-2].kg;
+        const cls = diff>0?'up':(diff<0?'down':'');
+        const arrow = diff>0?'↑':(diff<0?'↓':'→');
+        trendHtml = `<span class="sh-ex-trend ${cls}">${arrow} ${diff>0?'+':''}${diff} kg</span>`;
+      } else if(entries.length===1){
+        trendHtml = `<span class="sh-ex-trend">${entries[0].kg} kg</span>`;
+      }
+
+      const maxKg = Math.max(...entries.map(e=>e.kg), 1);
+
+      let barsHtml = '';
+      data.entries.forEach(e=>{
+        if(e.kg===null){
+          // reps-only entry (rare for weighted) — skip bar but could note
+          return;
+        }
+        const pct = Math.max(8, Math.round((e.kg/maxKg)*100));
+        const isCurrent = e.week===state.currentWeek;
+        barsHtml += `
+          <div class="sh-bar-col">
+            <div class="sh-bar-val">${e.kg}${e.reps?`×${e.reps}`:''}</div>
+            <div class="sh-bar ${isCurrent?'current':''}" style="height:${pct}%"></div>
+            <div class="sh-bar-wk">W${e.week}</div>
+          </div>`;
+      });
+
+      html += `
+        <div class="sh-exercise">
+          <div class="sh-ex-head">
+            <div class="sh-ex-name">${name}</div>
+            ${trendHtml}
+          </div>
+          <div class="sh-bars">${barsHtml}</div>
+        </div>`;
+    });
+  });
+
+  container.innerHTML = html;
+}
+
+function currentWeekMax(key){
+  const arr = state.maxTest[key];
+  if(!arr) return null;
+  const entry = arr.find(e=>e.week===state.currentWeek);
+  return entry ? entry.val : null;
+}
+function trendText(key){
+  const arr = state.maxTest[key];
+  if(!arr || arr.length===0) return 'No data yet';
+  if(arr.length===1) return `Latest: ${arr[arr.length-1].val} (wk ${arr[arr.length-1].week})`;
+  const last = arr[arr.length-1].val;
+  const prev = arr[arr.length-2].val;
+  const diff = last-prev;
+  const arrow = diff>0?'↑':(diff<0?'↓':'→');
+  return `${arrow} ${diff>0?'+':''}${diff} since wk ${arr[arr.length-2].week}`;
+}
+
+function setMaxTest(key, val){
+  if(!state.maxTest[key]) state.maxTest[key]=[];
+  const arr = state.maxTest[key];
+  const existing = arr.find(e=>e.week===state.currentWeek);
+  if(val===''||val===null||isNaN(val)){
+    if(existing){ arr.splice(arr.indexOf(existing),1); }
+  } else if(existing){
+    existing.val = Number(val);
+  } else {
+    arr.push({week:state.currentWeek, val:Number(val)});
+    arr.sort((a,b)=>a.week-b.week);
+  }
+  saveState();
+  renderStats();
+}
+
+document.getElementById('maxPush').addEventListener('input', e=>setMaxTest('push', e.target.value));
+document.getElementById('maxSitup').addEventListener('input', e=>setMaxTest('situp', e.target.value));
+document.getElementById('maxPull').addEventListener('input', e=>setMaxTest('pull', e.target.value));
+
+function renderTable2Result(){
+  const push = latestMax('push');
+  const situp = latestMax('situp');
+  const pull = latestMax('pull');
+  const el = document.getElementById('table2Result');
+
+  if(push===null && situp===null && pull===null){
+    el.innerHTML = `Enter your max reps to find your Table 2 band — this sets the volume used throughout the program.`;
+    return;
+  }
+  const {band, pullBand} = getTable2Band(push||0, situp||0, pull||0);
+  el.innerHTML = `
+    Current band: <b>Push/Sit-up ≤${band.max===Infinity?'∞':band.max}</b> → ${band.pushSets} sets × ${band.pushReps} reps (total ${band.pushTotal})<br>
+    <b>Pull-up ≤${pullBand.pullMax===Infinity?'∞':pullBand.pullMax}</b> → ${pullBand.pullSets} sets × ${pullBand.pullReps} reps (total ${pullBand.pullTotal})
+  `;
+}
+
+/* ============================================================
+   NAV
+   ============================================================ */
+document.querySelectorAll('.nav-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('view-'+btn.dataset.view).classList.add('active');
+    if(btn.dataset.view==='stats') renderStats();
+  });
+});
+
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  if(confirm('This will erase all logged weights, checkmarks, cardio logs and max test history on this device. Continue?')){
+    localStorage.removeItem(STORAGE_KEY);
+    state = loadState();
+    renderAll();
+  }
+});
+
+/* ============================================================
+   INIT
+   ============================================================ */
+function renderAll(){
+  renderWeekSelector();
+  renderDayTabs();
+  renderDayContent();
+}
+
+renderAll();
+setTimeout(centerActiveChip, 50);
+
+</script>
+</body>
+</html>
