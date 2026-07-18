@@ -24,6 +24,10 @@
     --lsd-bg: #133327;
     --core: #F4B860;
     --core-bg: #332512;
+    --yoga: #C89BF0;
+    --yoga-bg: #29193A;
+    --movement: #5AD1C8;
+    --movement-bg: #123330;
     --rest: #5C636F;
 
     --radius: 14px;
@@ -208,6 +212,9 @@
   .tag-hiit{background:var(--hiit);}
   .tag-lsd{background:var(--lsd);}
   .tag-core{background:var(--core);}
+  .tag-yoga{background:var(--yoga);}
+  .tag-movement{background:var(--movement);}
+  .tag-conditioning{background:var(--hiit);}
 
   .section.strength{ }
   .section.strength .section-head{ background:var(--strength-bg); }
@@ -215,6 +222,9 @@
   .section.hiit .section-head{ background:var(--hiit-bg); }
   .section.lsd .section-head{ background:var(--lsd-bg); }
   .section.core .section-head{ background:var(--core-bg); }
+  .section.yoga .section-head{ background:var(--yoga-bg); }
+  .section.movement .section-head{ background:var(--movement-bg); }
+  .section.conditioning .section-head{ background:var(--hiit-bg); }
 
   /* ============ EXERCISE ROW ============ */
   .exercise-row{
@@ -403,6 +413,61 @@
   }
   .table2-link b{ color:var(--text); }
 
+  /* ============ STRENGTH HISTORY ============ */
+  .strength-history-card{
+    background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+    padding:16px; margin-bottom:14px;
+  }
+  .sh-empty{
+    font-size:13px; color:var(--text-dim); line-height:1.6; padding:8px 0;
+  }
+  .sh-exercise{
+    border-bottom:1px solid var(--line); padding:14px 0;
+  }
+  .sh-exercise:last-child{ border-bottom:none; padding-bottom:2px; }
+  .sh-exercise:first-of-type{ padding-top:4px; }
+  .sh-ex-head{
+    display:flex; align-items:baseline; justify-content:space-between;
+    margin-bottom:10px;
+  }
+  .sh-ex-name{ font-size:14px; font-weight:600; }
+  .sh-ex-trend{
+    font-family:var(--ff-mono); font-size:11px; color:var(--text-dim);
+  }
+  .sh-ex-trend.up{ color:var(--lsd); }
+  .sh-ex-trend.down{ color:var(--hiit); }
+  .sh-bars{
+    display:flex; align-items:flex-end; gap:4px; height:64px;
+    overflow-x:auto; -ms-overflow-style:none; scrollbar-width:none;
+    padding-bottom:2px;
+  }
+  .sh-bars::-webkit-scrollbar{ display:none; }
+  .sh-bar-col{
+    flex-shrink:0; display:flex; flex-direction:column; align-items:center;
+    gap:3px; min-width:34px;
+  }
+  .sh-bar-val{
+    font-family:var(--ff-mono); font-size:9px; color:var(--text-dim);
+    white-space:nowrap;
+  }
+  .sh-bar{
+    width:22px; border-radius:4px 4px 0 0;
+    background:var(--strength); min-height:3px;
+    transition:height 0.2s;
+  }
+  .sh-bar.current{ background:var(--cali); }
+  .sh-bar-wk{
+    font-family:var(--ff-mono); font-size:9px; color:var(--text-faint);
+  }
+  .sh-reps{
+    font-size:10px; color:var(--text-faint);
+  }
+  .sh-region-label{
+    font-size:11px; color:var(--text-faint); text-transform:uppercase;
+    letter-spacing:0.05em; margin:12px 0 2px; font-weight:600;
+  }
+  .sh-region-label:first-child{ margin-top:0; }
+
   /* ============ PROGRAM OVERVIEW (Settings) ============ */
   .overview-block{
     background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
@@ -435,7 +500,7 @@
 <header>
   <div class="header-top">
     <div class="brand">FORGE<span>.</span></div>
-    <div class="week-pill" id="weekPill">WEEK 1 / 26</div>
+    <div class="week-pill" id="weekPill">WEEK 1 / 9</div>
   </div>
   <div class="week-nav">
     <div class="week-arrow" id="weekPrev">‹</div>
@@ -460,7 +525,7 @@
   <div class="view" id="view-stats">
     <div class="day-header">
       <div class="day-title">Stats</div>
-      <div class="day-subtitle">Big 3 progress &amp; weekly volume</div>
+      <div class="day-subtitle">Big 3, strength &amp; weekly volume</div>
     </div>
 
     <div class="stats-grid" id="weekStats"></div>
@@ -501,8 +566,14 @@
       <div class="table2-link" id="table2Result"></div>
     </div>
 
+    <div class="strength-history-card">
+      <div class="max-test-title">Strength Progression</div>
+      <div class="max-test-sub">Weight &amp; reps logged per exercise, across weeks</div>
+      <div id="strengthHistory"></div>
+    </div>
+
     <div class="overview-block">
-      <div class="overview-title">26-week LSD &amp; HIIT progression</div>
+      <div class="overview-title">8-week endurance &amp; HIIT progression</div>
       <div class="overview-body" id="progressionInfo"></div>
     </div>
   </div>
@@ -514,23 +585,31 @@
     </div>
 
     <div class="overview-block">
-      <div class="overview-title">Structure</div>
+      <div class="overview-title">Structure — 8-week block + break</div>
       <div class="overview-body">
-        4 strength sessions (2 upper / 2 lower), 5 Big 3 calisthenics sessions (push-ups, sit-ups, pull-ups per Table 2), 1 HIIT interval session, 2 LSD cardio sessions, plus core and flexibility folded into the active days. All progressions follow NSW Tables 1, 2 and 6 across 26 weeks.
+        <b>Mon</b> Upper A (push) · <b>Tue</b> HIIT kettlebell/calisthenics · <b>Wed</b> Legs · <b>Thu</b> Upper B (pull) · <b>Fri</b> HIIT endurance + movement · <b>Sat</b> long endurance + movement · <b>Sun</b> full rest.<br><br>
+        3 gym sessions (push / pull / legs), two HIIT sessions that alternate in style — Tuesday is kettlebell/calisthenics conditioning, Friday is endurance intervals — Big 3 calisthenics on the lifting days, and ground-based movement work on the endurance days. Progressions follow NSW Tables 1, 2 and 6.
       </div>
     </div>
 
     <div class="overview-block">
-      <div class="overview-title">Cardio mode picker</div>
+      <div class="overview-title">Two HIIT styles</div>
       <div class="overview-body">
-        HIIT and LSD sessions let you choose run, swim or road bike each time. Targets shown are pace-matched per NSW Table 1, with swim distances in <b>meters</b>. Mix modes weekly — e.g. run-heavy weeks, bike-heavy weeks, mixed weeks.
+        <b>Tue — Kettlebell / calisthenics circuit:</b> power-endurance conditioning. Kettlebells are gym-only, so each exercise shows a bodyweight "or" version for home. <b>Fri — Endurance intervals:</b> pick run, swim or road bike, pace-matched per NSW Table 1 with swim distances in meters rounded to pool lengths (25m).
       </div>
     </div>
 
     <div class="overview-block">
-      <div class="overview-title">Deload weeks</div>
+      <div class="overview-title">Movement / mobility</div>
       <div class="overview-body">
-        Every 4th week (weeks 4, 8, 12, 16, 20, 24 — marked with a dot on the week selector) automatically reduces all volumes by ~30% and removes HIIT intervals.
+        Ground-based movement work (joint CARs, deep squat sits, hanging, crawling, hip flows) in the LeoMoves tradition, placed on the endurance days. Each strength day also opens with a 2-4 min mobility prep for the joints you're about to load. These keep joints resilient — quality and control over range.
+      </div>
+    </div>
+
+    <div class="overview-block">
+      <div class="overview-title">8-week mesocycle + break</div>
+      <div class="overview-body">
+        Foundation (wk 1-2) → Build (wk 3-4) → Intensify (wk 5-6) → Peak (wk 7) → Back-off (wk 8) → Break (wk 9, marked with a dot; load eases ~30% or light movement only). At the end of the cycle, we rebuild the next 8 weeks from the weights and reps you logged.
       </div>
     </div>
 
@@ -569,7 +648,7 @@ const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sun
 
 // Week 0 = test week (1.5mi run / 500m swim timed) -> we start program weeks at 1
 // 26-week progressions, derived from NSW Table 6 (yards -> meters: 1yd = 0.9144m)
-function ydToM(yd){ return Math.round(yd * 0.9144 / 5) * 5; } // round to nearest 5m
+function ydToM(yd){ return Math.round(yd * 0.9144 / 25) * 25; } // round to nearest pool length (25m)
 
 const LSD_RUN_KM = []; // miles -> km
 const LSD_SWIM_M = []; // yards -> meters
@@ -608,14 +687,18 @@ const table6 = [
 
 function mi2km(mi){ return Math.round(mi * 1.60934 * 100) / 100; }
 
-const DELOAD_WEEKS = [4,8,12,16,20,24];
+const DELOAD_WEEKS = [9];
+const WEEK_COUNT = 9;
 
-// Tempo varies slightly by week thirds for strength progression labeling
+// 4-week mesocycle: Foundation -> Build -> Peak -> Deload
+// 8-week mesocycle + 1 week break (week 9)
 function strengthPhase(week){
-  if(week<=6) return {label:'Foundation', tempo:'3010', note:'Higher reps (10-12), moderate load. Build movement quality.'};
-  if(week<=13) return {label:'Build', tempo:'3110', note:'Slightly heavier, same reps. Add 2-3 sec pause at bottom on key lifts.'};
-  if(week<=20) return {label:'Intensify', tempo:'4010', note:'Heavier load, slower eccentric (4 sec down). Reduce to 8-10 reps if needed.'};
-  return {label:'Peak', tempo:'4011', note:'Heaviest controlled loads. 4 sec down, 1 sec hold, explosive up, 1 sec hold.'};
+  if(week<=2) return {label:'Foundation', tempo:'3010', note:'Reps 10-12, moderate load. Establish clean technique and your working weights — these become the baseline we build on.'};
+  if(week<=4) return {label:'Build', tempo:'3110', note:'Same reps, add a little load each week. 1 sec pause at the bottom of each rep on the main lifts.'};
+  if(week<=6) return {label:'Intensify', tempo:'4010', note:'Heavier load, slower 4 sec eccentric. Drop to 8-10 reps if form slips — quality over number.'};
+  if(week===7) return {label:'Peak', tempo:'4011', note:'Heaviest controlled loads of the block. 4 sec down, 1 sec pause, controlled up. This is the test of the cycle.'};
+  if(week===8) return {label:'Back-off', tempo:'3010', note:'Pull load back ~10-15% from peak, reps 10-12. Consolidate strength before the break week.'};
+  return {label:'Break', tempo:'3010', note:'Recovery week. Ease load ~30%, reps 12-15, or swap for light movement only. Let the 8 weeks of work absorb before the next block.'};
 }
 
 // Big 3 Table 2 bands (push/situp share a band, pullups separate)
@@ -681,56 +764,54 @@ function reduceRange(rangeStr, by){
 
 function deload(week){ return DELOAD_WEEKS.includes(week); }
 
-function strengthSection(week, dayKey, region, variant){
+function strengthSection(week, dayKey, variant){
   const phase = strengthPhase(week);
-  const sets = deload(week) ? '1-2' : '1-2';
+  const sets = '1-2';
   const reps = deload(week) ? '12-15' : '10-12';
 
-  const exercisesByRegionVariant = {
-    'upper-A':[
-      {name:'Bench press', target:`Strength`},
-      {name:'Lat pulldown', target:`Strength`},
-      {name:'Seated row', target:`Strength`},
-      {name:'Shoulder press', target:`Strength`},
-      {name:'Triceps dips', target:`Strength`},
+  const exercisesByVariant = {
+    'push':[
+      {name:'Bench press'},
+      {name:'Incline press'},
+      {name:'Shoulder press'},
+      {name:'Deltoid lateral raise'},
+      {name:'Triceps dips / pushdown'},
     ],
-    'upper-B':[
-      {name:'Incline press', target:`Strength`},
-      {name:'Single-arm row', target:`Strength`},
-      {name:'Deltoid lateral raise', target:`Strength`},
-      {name:'Upright row', target:`Strength`},
-      {name:'Biceps curl', target:`Strength`},
+    'pull':[
+      {name:'Pull-ups / lat pulldown'},
+      {name:'Seated row'},
+      {name:'Single-arm dumbbell row'},
+      {name:'Rear-delt fly / face pull'},
+      {name:'Biceps curl'},
     ],
-    'lower-A':[
-      {name:'Goblet squat / leg press', target:`Strength`},
-      {name:'Romanian deadlift', target:`Strength`},
-      {name:'Lunges', target:`Strength`},
-      {name:'Leg curl', target:`Strength`},
-      {name:'Heel raises', target:`Strength`},
-    ],
-    'lower-B':[
-      {name:'Lunges (alt stance)', target:`Strength`},
-      {name:'Back hyperextension', target:`Strength`},
-      {name:'Deadlifts', target:`Strength`},
-      {name:'Leg press', target:`Strength`},
-      {name:'Heel raises (single-leg)', target:`Strength`},
+    'legs':[
+      {name:'Goblet squat / leg press'},
+      {name:'Romanian deadlift'},
+      {name:'Walking lunges'},
+      {name:'Leg curl'},
+      {name:'Heel raises'},
     ],
   };
 
-  const key = `${region}-${variant}`;
-  const exList = exercisesByRegionVariant[key].map((e,i)=>({
+  const exList = exercisesByVariant[variant].map((e,i)=>({
     id:`${dayKey}-str${i}`,
     name:e.name,
     target:`${sets} × ${reps} reps · RPE 8-9`,
     hasWeight:true
   }));
 
+  const titles = {
+    'push':'Upper A — Push focus',
+    'pull':'Upper B — Pull focus',
+    'legs':'Lower Body — Legs'
+  };
+
   return {
     type:'strength',
-    title: region==='upper' ? `Upper Body — ${variant==='A'?'Push/Pull':'Alt'}` : `Lower Body — ${variant==='A'?'Compound':'Alt'}`,
+    title: titles[variant],
     meta: `${phase.label} · Tempo ${phase.tempo}`,
     exercises: exList,
-    note: phase.note + (deload(week) ? ' <b>Deload week:</b> ease off load ~20-30%, focus on form.' : '')
+    note: phase.note
   };
 }
 
@@ -760,18 +841,123 @@ function flexSection(dayKey, label){
   };
 }
 
+function yogaSection(dayKey, meta){
+  return {
+    type:'yoga',
+    title:'Yoga / Mobility',
+    meta: meta || '20-40 min',
+    exercises:[
+      {id:`${dayKey}-yoga-flow`, name:'Mobility flow', target:'Sun salutations or full-body flow — 15-25 min', hasWeight:false},
+      {id:`${dayKey}-yoga-hips`, name:'Hip & hamstring openers', target:'Pigeon, lizard, forward folds — hold 45-60s each', hasWeight:false},
+      {id:`${dayKey}-yoga-tspine`, name:'Thoracic & shoulder mobility', target:'Cat-cow, thread-the-needle, open books', hasWeight:false},
+    ],
+    note:'This is active recovery — keep it gentle. Breathe into tight spots rather than forcing range.'
+  };
+}
+
+// Ground-based movement / mobility in the LeoMoves tradition — CARs, flows, crawls.
+function movementSection(dayKey, meta){
+  return {
+    type:'movement',
+    title:'Movement / Mobility Flow',
+    meta: meta || '15-25 min',
+    exercises:[
+      {id:`${dayKey}-mv-cars`, name:'Joint CARs (controlled rotations)', target:'Shoulders, hips, spine, ankles — 3-5 slow circles each direction', hasWeight:false},
+      {id:`${dayKey}-mv-squat`, name:'Deep squat sit + rotations', target:'Sit in the bottom 60-90s, rotate T-spine each side', hasWeight:false},
+      {id:`${dayKey}-mv-scap`, name:'Scapular & hanging work', target:'Scap pull-ups, active/passive hangs — 3 × 20-30s', hasWeight:false},
+      {id:`${dayKey}-mv-crawl`, name:'Crawling / locomotion pattern', target:'Beast crawl, crab reach, or Cossack flow — 2-3 min continuous', hasWeight:false},
+      {id:`${dayKey}-mv-hip`, name:'Hip mobility flow', target:'90/90 transitions, deep lunge reaches — controlled, no bouncing', hasWeight:false},
+    ],
+    note:'Ground-based movement work — CARs, deep positions, crawling, hanging. Quality and control over range; move slowly and own each position. Great for keeping joints resilient at any age.'
+  };
+}
+
+// Short mobility prep to open a strength session (2-4 min).
+function mobilityPrepSection(dayKey, focus){
+  const drills = {
+    'push':'Shoulder CARs, wall slides, thoracic extensions, band pull-aparts',
+    'pull':'Scap pull-ups, dead hangs, band dislocates, wrist prep',
+    'legs':'Hip CARs, deep squat sit, ankle rocks, leg swings',
+  };
+  return {
+    type:'movement',
+    title:'Mobility Prep',
+    meta:'2-4 min before lifting',
+    exercises:[
+      {id:`${dayKey}-prep`, name:drills[focus]||'Full-body joint prep', target:'Prime the joints you\'re about to load — controlled, not stretched to failure', hasWeight:false},
+    ],
+    note:null
+  };
+}
+
+function enduranceSection(week, dayKey, kind){
+  // kind = 'flex-cardio' (Friday, optional/moderate) or 'long' (Saturday)
+  const t = table6[week-1];
+  const runKm = mi2km(t.runMi);
+  const swimM = ydToM(t.swimYd);
+
+  if(kind==='flex-cardio'){
+    const modKm = Math.max(2, Math.round((runKm*0.6)*2)/2);
+    const modSwim = Math.max(600, Math.round((swimM*0.6)/25)*25);
+    return {
+      type:'lsd', week, dayKey,
+      title:'Endurance — Easy/Optional',
+      meta: deload(week) ? 'Deload — keep it light' : 'Flexible: 30-50 min if you train today',
+      modes:{
+        run:{label:'Run', detail:`${modKm} km easy, conversational pace. Optional — skip or shorten if you need more recovery.`},
+        swim:{label:'Swim', detail:`${modSwim} m easy continuous. Great low-impact option.`},
+        bike:{label:'Bike', detail:`${deload(week)?'30-40':'45-70'} min easy-to-moderate road ride.`}
+      }
+    };
+  } else {
+    return {
+      type:'lsd', week, dayKey,
+      title:'Endurance — Long',
+      meta: deload(week) ? 'Deload — reduced distance, easy effort' : `Week ${week} long session`,
+      modes:{
+        run:{label:'Run', detail:`${runKm} km at easy, relaxed pace. Build gradually week to week.`},
+        swim:{label:'Swim', detail:`${swimM} m continuous, easy effort.`},
+        bike:{label:'Bike', detail:`${deload(week)? '60-75':'90-120'} min steady endurance ride (zone 2) — best low-impact fat-loss session.`}
+      }
+    };
+  }
+}
+
+function conditioningSection(week, dayKey){
+  // Kettlebell / calisthenics HIIT circuit. Kettlebell = gym-only; bodyweight fallback shown.
+  const rounds = week<=2 ? 3 : (week<=5 ? 4 : (week<=7 ? 5 : 3));
+  const workRest = week<=4 ? '30s work / 30s rest' : '40s work / 20s rest';
+
+  const exercises = [
+    {id:`${dayKey}-cond0`, name:'KB swing  ·  or bodyweight: jump squat', target:'Explosive hips — power endurance', hasWeight:false},
+    {id:`${dayKey}-cond1`, name:'KB goblet squat  ·  or: air squat + pause', target:'Legs under fatigue', hasWeight:false},
+    {id:`${dayKey}-cond2`, name:'KB clean & press (alt)  ·  or: push-up → pike', target:'Full-body drive', hasWeight:false},
+    {id:`${dayKey}-cond3`, name:'KB row  ·  or: inverted row / towel row', target:'Pull under fatigue', hasWeight:false},
+    {id:`${dayKey}-cond4`, name:'Mountain climbers / burpees', target:'Conditioning finisher', hasWeight:false},
+  ];
+
+  return {
+    type:'conditioning',
+    week, dayKey,
+    title:'HIIT — Kettlebell / Calisthenics',
+    meta: deload(week) ? 'Break week — 2 easy rounds or skip' : `${rounds} rounds · ${workRest}`,
+    exercises,
+    note:'<b>Circuit:</b> move through all 5, then rest 1-2 min and repeat. Kettlebells are at the gym — the "or" option is your bodyweight version for home. Keep 1-2 reps in reserve; this is conditioning, not a strength max.'
+  };
+}
+
 function hiitSection(week, dayKey){
   const t = table6[week-1];
   const reps = t.intReps;
-  const runQtr = '~4s faster than 1/4-mi base pace';
+  const runQtr = '~4s faster than 400m base pace';
   const swimReps100 = '~2s faster than 100m base pace';
 
   return {
     type:'hiit',
     week,
     dayKey,
-    title:'HIIT — Interval Session',
-    meta: deload(week) ? 'Deload — easy spin/swim only, no intervals' : `${reps} reps this week`,
+    title:'HIIT — Endurance Intervals',
+    meta: deload(week) ? 'Break week — easy spin/swim only, no intervals' : `${reps} reps this week`,
     deload: deload(week),
     modes:{
       run:{
@@ -784,7 +970,7 @@ function hiitSection(week, dayKey){
         label:'Swim',
         detail: deload(week)
           ? '15-20 min easy continuous swim — no hard intervals this week.'
-          : `Warm up 10 min easy → ${reps} × 90m hard intervals at ${swimReps100} → easy recovery stroke 2-2.5× work time → 10 min cool-down.`
+          : `Warm up 10 min easy → ${reps} × 100m hard intervals (4×25m or 2×50m pool) at ${swimReps100} → easy recovery stroke 2-2.5× work time → 10 min cool-down.`
       },
       bike:{
         label:'Bike',
@@ -839,71 +1025,66 @@ function buildDay(week, dayIndex){
   switch(dayName){
     case 'Monday':
       return {
-        dayKey, subtitle:'Upper strength + Big 3',
+        dayKey, subtitle:'Upper A — Push + Big 3',
         sections:[
-          strengthSection(week, dayKey, 'upper', 'A'),
+          mobilityPrepSection(dayKey, 'push'),
+          strengthSection(week, dayKey, 'push'),
           bigThreeSection(week, dayKey, 'full'),
           flexSection(dayKey, '10 min post-session stretch')
         ]
       };
     case 'Tuesday':
       return {
-        dayKey, subtitle:'Lower strength + core',
+        dayKey, subtitle:'HIIT — Kettlebell / Calisthenics',
         sections:[
-          strengthSection(week, dayKey, 'lower', 'A'),
-          coreSection(week, dayKey, [
-            {name:'Bridge', target:'2 sets × 12 reps each side'},
-            {name:'Side plank', target:'2 sets × 30s each side'},
-          ]),
-          flexSection(dayKey, '10 min post-session stretch')
-        ]
-      };
-    case 'Wednesday':
-      return {
-        dayKey, subtitle:'HIIT + Big 3 + core',
-        sections:[
-          hiitSection(week, dayKey),
-          bigThreeSection(week, dayKey, 'full'),
+          conditioningSection(week, dayKey),
           coreSection(week, dayKey, [
             {name:'Plank', target:'2 sets × 30s'},
             {name:'Bird dog', target:'2 sets × 10 reps each side'},
           ])
         ]
       };
-    case 'Thursday':
+    case 'Wednesday':
       return {
-        dayKey, subtitle:'Upper strength (alt) + LSD easy + Big 3',
+        dayKey, subtitle:'Lower — Legs + core',
         sections:[
-          strengthSection(week, dayKey, 'upper', 'B'),
-          lsdSection(week, dayKey, 'short'),
-          bigThreeSection(week, dayKey, 'reduced'),
-          flexSection(dayKey, 'Hips, hamstrings, t-spine — post-cardio')
+          mobilityPrepSection(dayKey, 'legs'),
+          strengthSection(week, dayKey, 'legs'),
+          coreSection(week, dayKey, [
+            {name:'Bridge', target:'2 sets × 12 reps each side'},
+            {name:'Side plank', target:'2 sets × 30s each side'},
+          ]),
+          flexSection(dayKey, '10 min post-session stretch — hips & quads')
         ]
       };
-    case 'Friday':
+    case 'Thursday':
       return {
-        dayKey, subtitle:'Lower strength (alt) + Big 3',
+        dayKey, subtitle:'Upper B — Pull + Big 3',
         sections:[
-          strengthSection(week, dayKey, 'lower', 'B'),
+          mobilityPrepSection(dayKey, 'pull'),
+          strengthSection(week, dayKey, 'pull'),
           bigThreeSection(week, dayKey, 'full'),
           flexSection(dayKey, '10 min post-session stretch')
         ]
       };
+    case 'Friday':
+      return {
+        dayKey, subtitle:'HIIT — Endurance + movement',
+        sections:[
+          hiitSection(week, dayKey),
+          movementSection(dayKey, '15-20 min — post-cardio')
+        ]
+      };
     case 'Saturday':
       return {
-        dayKey, subtitle:'LSD long + Big 3 + core',
+        dayKey, subtitle:'Long endurance + movement',
         sections:[
-          lsdSection(week, dayKey, 'long'),
-          bigThreeSection(week, dayKey, 'reduced'),
-          coreSection(week, dayKey, [
-            {name:'Wipers', target:'2 sets × 10 reps'},
-            {name:'Superman', target:'2 sets × 8 reps'},
-          ]),
-          flexSection(dayKey, 'Full body — 15 min')
+          enduranceSection(week, dayKey, 'long'),
+          movementSection(dayKey, '20-25 min')
         ]
       };
     case 'Sunday':
-      return { dayKey, subtitle:'Rest', sections:[], rest:true };
+      return { dayKey, subtitle:'Full rest', sections:[], rest:true };
   }
 }
 
@@ -956,7 +1137,7 @@ function latestMax(key){
 function renderWeekSelector(){
   const track = document.getElementById('weekTrack');
   track.innerHTML='';
-  for(let w=1; w<=26; w++){
+  for(let w=1; w<=WEEK_COUNT; w++){
     const chip = document.createElement('div');
     chip.className = 'week-chip' + (w===state.currentWeek?' active':'') + (DELOAD_WEEKS.includes(w)?' deload':'');
     chip.textContent = w;
@@ -969,10 +1150,10 @@ function renderWeekSelector(){
     });
     track.appendChild(chip);
   }
-  document.getElementById('weekPill').textContent = `WEEK ${state.currentWeek} / 26${deload(state.currentWeek)?' · DELOAD':''}`;
+  document.getElementById('weekPill').textContent = `WEEK ${state.currentWeek} / ${WEEK_COUNT}${deload(state.currentWeek)?' · DELOAD':''}`;
 
   document.getElementById('weekPrev').classList.toggle('disabled', state.currentWeek<=1);
-  document.getElementById('weekNext').classList.toggle('disabled', state.currentWeek>=26);
+  document.getElementById('weekNext').classList.toggle('disabled', state.currentWeek>=WEEK_COUNT);
 }
 function centerActiveChip(){
   const track = document.getElementById('weekTrack');
@@ -987,7 +1168,7 @@ document.getElementById('weekPrev').addEventListener('click', ()=>{
   if(state.currentWeek>1){ state.currentWeek--; saveState(); renderAll(); centerActiveChip(); }
 });
 document.getElementById('weekNext').addEventListener('click', ()=>{
-  if(state.currentWeek<26){ state.currentWeek++; saveState(); renderAll(); centerActiveChip(); }
+  if(state.currentWeek<WEEK_COUNT){ state.currentWeek++; saveState(); renderAll(); centerActiveChip(); }
 });
 
 /* ============================================================
@@ -1108,7 +1289,7 @@ function renderSection(sec, dayKey, idx){
   const head = document.createElement('div');
   head.className='section-head';
 
-  const tagClass = {strength:'tag-strength', cali:'tag-cali', hiit:'tag-hiit', lsd:'tag-lsd', core:'tag-core'}[sec.type];
+  const tagClass = {strength:'tag-strength', cali:'tag-cali', hiit:'tag-hiit', lsd:'tag-lsd', core:'tag-core', yoga:'tag-yoga', movement:'tag-movement', conditioning:'tag-conditioning'}[sec.type];
 
   let progressHtml='';
   if(sec.exercises){
@@ -1351,8 +1532,101 @@ function renderStats(){
     <b>Week ${state.currentWeek}${deload(state.currentWeek)?' (Deload)':''}</b><br>
     LSD long target — Run: ${runKm} km · Swim: ${swimM} m · Bike: ${deload(state.currentWeek)?'60-75':'90-120'} min<br>
     HIIT intervals — ${intReps} reps ${deload(state.currentWeek)?'(deload — easy session instead)':''}<br><br>
-    Distances convert NSW Table 6 (miles/yards) to km/m. Swim values rounded to nearest 5m.
+    Distances convert NSW Table 6 (miles/yards) to km/m. Swim values rounded to nearest 25m (pool length).
   `;
+
+  renderStrengthHistory();
+}
+
+function renderStrengthHistory(){
+  const container = document.getElementById('strengthHistory');
+  // Walk all weeks/days, collect strength exercises and their logged kg/reps.
+  // Group by region (upper/lower) then by exercise name, preserving week order.
+  const byName = {}; // name -> { region, entries:[{week, kg, reps}] }
+
+  for(let w=1; w<=WEEK_COUNT; w++){
+    for(let d=0; d<7; d++){
+      const day = buildDay(w, d);
+      if(day.rest) continue;
+      day.sections.forEach(sec=>{
+        if(sec.type!=='strength') return;
+        const tl = sec.title.toLowerCase();
+        const region = tl.includes('push') ? 'Push (Upper A)' : (tl.includes('pull') ? 'Pull (Upper B)' : 'Legs (Lower)');
+        sec.exercises.forEach(ex=>{
+          const kg = state.weights[ex.id+'-kg'];
+          const reps = state.weights[ex.id+'-reps'];
+          if(kg===undefined && reps===undefined) return;
+          if((kg===''||kg===undefined) && (reps===''||reps===undefined)) return;
+          if(!byName[ex.name]) byName[ex.name] = { region, entries:[] };
+          byName[ex.name].entries.push({
+            week:w,
+            kg: kg!==''&&kg!==undefined ? Number(kg) : null,
+            reps: reps!==''&&reps!==undefined ? Number(reps) : null
+          });
+        });
+      });
+    }
+  }
+
+  const names = Object.keys(byName);
+  if(names.length===0){
+    container.innerHTML = `<div class="sh-empty">No strength data logged yet. Log weight and reps on the Train tab — your progression for each exercise will appear here as a chart.</div>`;
+    return;
+  }
+
+  // group names by region
+  const REGION_ORDER = ['Push (Upper A)', 'Pull (Upper B)', 'Legs (Lower)'];
+  const regions = {'Push (Upper A)':[], 'Pull (Upper B)':[], 'Legs (Lower)':[]};
+  names.forEach(n=>{ if(regions[byName[n].region]) regions[byName[n].region].push(n); });
+
+  let html = '';
+  REGION_ORDER.forEach(region=>{
+    if(regions[region].length===0) return;
+    html += `<div class="sh-region-label">${region}</div>`;
+    regions[region].forEach(name=>{
+      const data = byName[name];
+      const entries = data.entries.filter(e=>e.kg!==null);
+      // trend: compare last two kg entries
+      let trendHtml = '<span class="sh-ex-trend">—</span>';
+      if(entries.length>=2){
+        const diff = entries[entries.length-1].kg - entries[entries.length-2].kg;
+        const cls = diff>0?'up':(diff<0?'down':'');
+        const arrow = diff>0?'↑':(diff<0?'↓':'→');
+        trendHtml = `<span class="sh-ex-trend ${cls}">${arrow} ${diff>0?'+':''}${diff} kg</span>`;
+      } else if(entries.length===1){
+        trendHtml = `<span class="sh-ex-trend">${entries[0].kg} kg</span>`;
+      }
+
+      const maxKg = Math.max(...entries.map(e=>e.kg), 1);
+
+      let barsHtml = '';
+      data.entries.forEach(e=>{
+        if(e.kg===null){
+          // reps-only entry (rare for weighted) — skip bar but could note
+          return;
+        }
+        const pct = Math.max(8, Math.round((e.kg/maxKg)*100));
+        const isCurrent = e.week===state.currentWeek;
+        barsHtml += `
+          <div class="sh-bar-col">
+            <div class="sh-bar-val">${e.kg}${e.reps?`×${e.reps}`:''}</div>
+            <div class="sh-bar ${isCurrent?'current':''}" style="height:${pct}%"></div>
+            <div class="sh-bar-wk">W${e.week}</div>
+          </div>`;
+      });
+
+      html += `
+        <div class="sh-exercise">
+          <div class="sh-ex-head">
+            <div class="sh-ex-name">${name}</div>
+            ${trendHtml}
+          </div>
+          <div class="sh-bars">${barsHtml}</div>
+        </div>`;
+    });
+  });
+
+  container.innerHTML = html;
 }
 
 function currentWeekMax(key){
